@@ -12,15 +12,21 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#pragma once
+
 #include "params.h"
 
 class Display
 {
 public:
     Display(params::DisplayParams p = {});
+    void init() const;
+
     void displayValidLocation() const;
     void displayInvalidLocation() const;
-    void init() const;
+
+    void displayTiltOk() const;
+    void displayTiltError() const;
 
 private:
     void locationLedGreenOff() const;
@@ -28,6 +34,13 @@ private:
     void locationLedRedOn() const;
     void locationLedRedOff() const;
 
+    void tiltLedGreenOff() const;
+    void tiltLedGreenOn() const;
+    void tiltLedRedOff() const;
+    void tiltLedRedOn() const;
+
     int green_led_location_ = 0;
     int red_led_location_ = 0;
+    int green_led_tilt_ = 0;
+    int red_led_tilt_ = 0;
 };

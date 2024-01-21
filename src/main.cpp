@@ -15,6 +15,7 @@
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 #include "display.h"
+#include "imu.h"
 
 static const int RXPin = 12, TXPin = 11;
 static const uint32_t GPSBaud = 9600;
@@ -29,6 +30,8 @@ SoftwareSerial ss(RXPin, TXPin);
 
 Display display;
 
+Imu imu;
+
 void displayInfo();
 
 void setup()
@@ -39,6 +42,7 @@ void setup()
     // initialize the pushbutton pin as an input:
     pinMode(buttonPin, INPUT);
     display.init();
+    imu.init();
 }
 
 void loop()
@@ -58,17 +62,23 @@ void loop()
       displayInfo();
   }
 
-  if (millis() > 5000 && gps.charsProcessed() < 10)
-  {
-   // Serial.println(F("No GPS detected: check wiring."));
-  }
+    imu.execute();
+    if (imu.checkTilt())
+    {
+        display.displayTiltOk();
+    }
+    else
+    {
+        display.displayTiltError();
+    }
+
 
   delay(100);
 }
 
 void displayInfo()
 {
-    Serial.print(F("Location: ")); 
+    //Serial.print(F("Location: ")); 
     if (gps.location.isValid())
     {
         //Serial.print(gps.location.lat(), 6);
@@ -76,25 +86,25 @@ void displayInfo()
         //Serial.print(gps.location.lng(), 6);
         display.displayValidLocation();
     }
-  else
-  {
-      //Serial.print(F("Invalid location"));
-    display.displayInvalidLocation();
-  }
+    else
+    {
+        //Serial.print(F("Invalid location"));
+        display.displayInvalidLocation();
+    }
 
-  Serial.print(F("  Date/Time: "));
-  if (gps.date.isValid())
-  {
-    Serial.print(gps.date.month());
-    Serial.print(F("/"));
-    Serial.print(gps.date.day());
-    Serial.print(F("/"));
-    Serial.print(gps.date.year());
-  }
-  else
-  {
-    Serial.print(F("Invalid date"));
-  }
+    Serial.print(F("  Date/Time: "));
+    if (gps.date.isValid())
+    {
+        Serial.print(gps.date.month());
+        Serial.print(F("/"));
+        Serial.print(gps.date.day());
+        Serial.print(F("/"));
+        Serial.print(gps.date.year());
+    }
+    else
+    {
+        Serial.print(F("Invalid date"));
+    }
 
   Serial.print(F(" "));
   if (gps.time.isValid())

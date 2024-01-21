@@ -13,12 +13,13 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "display.h"
-#include "params.h"
 #include <Arduino.h>
 
 Display::Display(params::DisplayParams p):
     green_led_location_(p.green_led_location), 
-    red_led_location_(p.red_led_location)
+    red_led_location_(p.red_led_location),
+    green_led_tilt_(p.green_led_tilt),
+    red_led_tilt_(p.red_led_tilt)
 {
 };
 
@@ -40,6 +41,18 @@ void Display::displayInvalidLocation() const
     locationLedRedOn();
 }
 
+void Display::displayTiltOk() const 
+{
+    tiltLedRedOff();
+    tiltLedGreenOn();
+} 
+
+void Display::displayTiltError() const 
+{
+    tiltLedGreenOff();
+    tiltLedRedOn();
+}
+
 void Display::locationLedGreenOff() const
 {
     digitalWrite(green_led_location_, LOW);
@@ -58,4 +71,24 @@ void Display::locationLedRedOff() const
 void Display::locationLedRedOn() const
 {
     digitalWrite(red_led_location_, HIGH);
+}
+
+void Display::tiltLedGreenOff() const
+{
+    digitalWrite(green_led_tilt_, LOW);
+}
+
+void Display::tiltLedGreenOn() const
+{
+    digitalWrite(green_led_tilt_, HIGH);
+}
+
+void Display::tiltLedRedOff() const
+{
+    digitalWrite(red_led_tilt_, LOW);
+}
+
+void Display::tiltLedRedOn() const
+{
+    digitalWrite(red_led_tilt_, HIGH);
 }

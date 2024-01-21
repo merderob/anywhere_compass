@@ -14,14 +14,34 @@
 
 #pragma once
 
-namespace params
-{
-struct DisplayParams
-{
-    int red_led_location = 13;
-    int green_led_location = 10;
-    int red_led_tilt = 9;
-    int green_led_tilt = 8;
-};
+#include "I2Cdev.h"
+#include "MPU6050.h"
 
-}
+// uncomment "OUTPUT_BINARY_ACCELGYRO" to send all 6 axes of data as 16-bit
+// binary, one right after the other. This is very fast (as fast as possible
+// without compression or data loss), and easy to parse, but impossible to read
+// for a human.
+//#define OUTPUT_BINARY_ACCELGYRO
+
+// uncomment "OUTPUT_READABLE_ACCELGYRO" if you want to see a tab-separated
+// list of the accel X/Y/Z and then gyro X/Y/Z values in decimal. Easy to read,
+// not so easy to parse, and slow(er) over UART.
+#define OUTPUT_READABLE_ACCELGYRO
+
+class Imu
+{
+public:
+    void init();
+    void execute();
+    void log();
+    bool checkTilt() const;
+
+private:
+    MPU6050 sensor_;
+    int16_t ax_;
+    int16_t ay_;
+    int16_t az_;
+    int16_t gx_; 
+    int16_t gy_;
+    int16_t gz_;
+};
