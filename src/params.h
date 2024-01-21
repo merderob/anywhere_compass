@@ -24,4 +24,16 @@ struct DisplayParams
     int green_led_tilt = 8;
 };
 
+struct GpsParams
+{
+    int rx_pin = 12;
+    int tx_pin = 11;
+    long gps_baud = 9600;
+};
+
+struct DebugParams 
+{
+    static const int serial_baud_rate = 9600;
+};
+
 }

@@ -12,58 +12,28 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "display.h"
-#include "imu.h"
-#include "gps.h"
+#pragma once
 
-const int buttonPin = 2;  // the number of the pushbutton pin
-int buttonState = 0;  // variable for reading the pushbutton status
+#include <TinyGPSPlus.h>
+#include "params.h"
 
-Display display;
+class SoftwareSerial;
 
-Imu imu;
-
-Gps gps;
-
-void setup()
+class Gps
 {
-    Serial.begin(params::DebugParams::serial_baud_rate);
+public:
+    Gps(params::GpsParams p = {});
+    void init();
+    void execute();
+    void log();
+    bool isLocationValid() const;
 
-    pinMode(buttonPin, INPUT);
-    imu.init();
-    gps.init();
-    display.init();
-}
+private:
+    TinyGPSPlus sensor_;
+    // The serial connection to the GPS device
+    SoftwareSerial* serial_ = nullptr;
 
-void loop()
-{
-    // read the state of the pushbutton value:
-    buttonState = digitalRead(buttonPin);
-    // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-    if (buttonState == HIGH) 
-    {
-        // Todo save location
-    }
-
-    imu.execute();
-    if (imu.checkTilt())
-    {
-        display.displayTiltOk();
-    }
-    else
-    {
-        display.displayTiltError();
-    }
-    
-    gps.execute();
-    if (gps.isLocationValid())
-    {
-        display.displayValidLocation();
-    }
-    else
-    {
-        display.displayInvalidLocation();
-    }
-
-    delay(100);
-}
+    int rx_pin_ = 0;
+    int tx_pin_ = 0;
+    long baud_rate_ = 9600;
+};
