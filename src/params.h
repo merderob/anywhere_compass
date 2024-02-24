@@ -16,12 +16,13 @@
 
 namespace params
 {
-struct DisplayParams
+    
+struct ImuParams
 {
-    int red_led_location = 13;
-    int green_led_location = 10;
-    int red_led_tilt = 9;
-    int green_led_tilt = 8;
+    /// @brief Accelerometer sensitivity with default +/- 2g scale
+    float accelerometer_sensitivity = 16384.0; 
+    /// @brief Gyroscope sensitivity with default +/- 250 deg/s scale
+    float gyrocope_sensitivity  = 131.0;   
 };
 
 struct GpsParams
@@ -29,6 +30,14 @@ struct GpsParams
     int rx_pin = 12;
     int tx_pin = 11;
     long gps_baud = 9600;
+};
+
+struct DisplayParams
+{
+    int red_led_location = 13;
+    int green_led_location = 10;
+    int red_led_tilt = 9;
+    int green_led_tilt = 8;
 };
 
 struct DebugParams 

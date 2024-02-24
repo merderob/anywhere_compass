@@ -25,8 +25,10 @@ Display::Display(params::DisplayParams p):
 
 void Display::init() const
 {
+    Serial.println("Initializing display");
     pinMode(red_led_location_, OUTPUT);
     pinMode(green_led_location_, OUTPUT);
+    Serial.println("Display initialized.");
 }
 
 void Display::displayValidLocation() const

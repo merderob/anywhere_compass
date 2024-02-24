@@ -14,30 +14,18 @@
 
 #pragma once
 
-#include <TinyGPSPlus.h>
+#include <QMC5883LCompass.h>
 #include "sensor_base.h"
 
-class SoftwareSerial;
-
-class Gps: public SensorBase
+class Compass: public SensorBase
 {
 public:
-    /// @brief Constructor.
-    /// @param p The GPS parameters.
-    Gps(params::GpsParams p = {});
-
+    Compass ();
     void init() override;
     void execute() override;
     void log() override;
 
-    bool isLocationValid() const;
-
 private:
-    TinyGPSPlus sensor_;
-    // The serial connection to the GPS device
-    SoftwareSerial* serial_ = nullptr;
-
-    int rx_pin_ = 0;
-    int tx_pin_ = 0;
-    long baud_rate_ = 9600;
+    QMC5883LCompass sensor_;
+    int azimuth_deg_ = 0;
 };

@@ -14,30 +14,7 @@
 
 #pragma once
 
-#include <TinyGPSPlus.h>
-#include "sensor_base.h"
-
-class SoftwareSerial;
-
-class Gps: public SensorBase
+class UserInput 
 {
-public:
-    /// @brief Constructor.
-    /// @param p The GPS parameters.
-    Gps(params::GpsParams p = {});
 
-    void init() override;
-    void execute() override;
-    void log() override;
-
-    bool isLocationValid() const;
-
-private:
-    TinyGPSPlus sensor_;
-    // The serial connection to the GPS device
-    SoftwareSerial* serial_ = nullptr;
-
-    int rx_pin_ = 0;
-    int tx_pin_ = 0;
-    long baud_rate_ = 9600;
 };

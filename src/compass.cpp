@@ -14,16 +14,26 @@
 
 #include "compass.h"
 
+Compass::Compass()
+{
+
+}
+
 void Compass::init()
 {
-    sensor_.begin();
+    sensor_.init();
 }
 
 void Compass::execute()
 {
+    // Read compass values
+    sensor_.read();
+    azimuth_deg_ = sensor_.getAzimuth();
 }
 
-void Compass::execute()
+void Compass::log()
 {
-    
+    Serial.print("az: ");
+    Serial.print(azimuth_deg_);
+    Serial.println();
 }

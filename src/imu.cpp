@@ -20,6 +20,14 @@
     #include "Wire.h"
 #endif
 
+Imu::Imu(params::ImuParams p):
+    accelerometer_sensitivity_(p.accelerometer_sensitivity),
+    gyrocope_sensitivity_(p.gyrocope_sensitivity)
+{
+
+}
+
+
 void Imu::init()
 {
     // join I2C bus (I2Cdev library doesn't do this automatically)
@@ -35,40 +43,16 @@ void Imu::init()
 
     // verify connection
     Serial.println("Testing device connections...");
-    Serial.println(sensor_.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+    initialized_ = sensor_.testConnection();
+    Serial.println(initialized_ ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
-    // use the code below to change accel/gyro offset values
-    /*
-    Serial.println("Updating internal sensor offsets...");
-    // -76	-2359	1688	0	0	0
-    Serial.print(accelgyro.getXAccelOffset()); Serial.print("\t"); // -76
-    Serial.print(accelgyro.getYAccelOffset()); Serial.print("\t"); // -2359
-    Serial.print(accelgyro.getZAccelOffset()); Serial.print("\t"); // 1688
-    Serial.print(accelgyro.getXGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getYGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getZGyroOffset()); Serial.print("\t"); // 0
-    Serial.print("\n");
-    accelgyro.setXGyroOffset(220);
-    accelgyro.setYGyroOffset(76);
-    accelgyro.setZGyroOffset(-85);
-    Serial.print(accelgyro.getXAccelOffset()); Serial.print("\t"); // -76
-    Serial.print(accelgyro.getYAccelOffset()); Serial.print("\t"); // -2359
-    Serial.print(accelgyro.getZAccelOffset()); Serial.print("\t"); // 1688
-    Serial.print(accelgyro.getXGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getYGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getZGyroOffset()); Serial.print("\t"); // 0
-    Serial.print("\n");
-    */
+    sensor_.setI2CBypassEnabled(true); // set bypass mode
 }
 
 void Imu::execute()
 {
     // read raw accel/gyro measurements from device
     sensor_.getMotion6(&ax_, &ay_, &az_, &gx_, &gy_, &gz_);
-
-    // these methods (and a few others) are also available
-    //accelgyro.getAcceleration(&ax, &ay, &az);
-    //accelgyro.getRotation(&gx, &gy, &gz);
 }
 
 bool Imu::checkTilt() const
@@ -88,6 +72,13 @@ void Imu::log()
         Serial.print(gx_); Serial.print("\t");
         Serial.print(gy_); Serial.print("\t");
         Serial.println(gz_);
+
+        // Serial.print(ax/ACCEL_SENS); Serial.print("\t");
+        // Serial.print(ay/ACCEL_SENS); Serial.print("\t");
+        // Serial.print(az/ACCEL_SENS); Serial.print("\t");
+        // Serial.print(gx/GYRO_SENS); Serial.print("\t");
+        // Serial.print(gy/GYRO_SENS); Serial.print("\t");
+        // Serial.print(gz/GYRO_SENS); Serial.print("\t");
     #endif
 
     #ifdef OUTPUT_BINARY_ACCELGYRO

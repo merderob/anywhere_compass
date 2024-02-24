@@ -26,8 +26,10 @@ Gps::Gps (params::GpsParams p):
 
 void Gps::init()
 {
+    Serial.println("Initializing GPS");
     serial_ = new SoftwareSerial(rx_pin_, tx_pin_);
     serial_->begin(baud_rate_);
+    Serial.println("GPS initialized");
 }
 
 void Gps::execute()

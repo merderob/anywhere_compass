@@ -14,15 +14,21 @@
 
 #pragma once
 
-#include <HMC5883L.h>
+#include "params.h"
 
-class Compass
+class SensorBase
 {
 public:
-    void init();
-    void execute();
-    void log();
-
-private:
-    HMC5883L sensor_;
+    /// @brief Initializes the sensor.
+    virtual void init() = 0;
+    /// @brief Executes the sensor update step.
+    virtual void execute() = 0;
+    /// @brief Logs the internal states.
+    virtual void log() = 0;
+    /// @brief Returns if the sensor is ready to use.
+    /// @return True, if the sensor is ready. 
+    virtual bool ready() const;
+protected:
+    /// @brief Stores if the sensor is initialized.
+    bool initialized_ = false;
 };

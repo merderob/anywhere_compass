@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "sensor_base.h"
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
@@ -28,12 +29,14 @@
 // not so easy to parse, and slow(er) over UART.
 #define OUTPUT_READABLE_ACCELGYRO
 
-class Imu
+class Imu : public SensorBase
 {
 public:
-    void init();
-    void execute();
-    void log();
+    Imu(params::ImuParams p = {});
+    void init() override;
+    void execute() override;
+    void log() override;
+
     bool checkTilt() const;
 
 private:
@@ -44,4 +47,7 @@ private:
     int16_t gx_; 
     int16_t gy_;
     int16_t gz_;
+
+    float accelerometer_sensitivity_ = 0.0f;
+    float gyrocope_sensitivity_ = 0.0;
 };

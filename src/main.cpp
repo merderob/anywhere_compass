@@ -14,56 +14,68 @@
 
 #include "display.h"
 #include "imu.h"
+#include "compass.h"
 #include "gps.h"
+#include "user_input.h"
 
-const int buttonPin = 2;  // the number of the pushbutton pin
-int buttonState = 0;  // variable for reading the pushbutton status
+ // the number of the pushbutton pin
+const int button_pin = 2; 
+// variable for reading the pushbutton status
+int button_state = 0;  
+unsigned long prev_exec_time_ms = 0;
 
 Display display;
 
 Imu imu;
 
+Compass compass;
+
 Gps gps;
+
+UserInput user_input;
 
 void setup()
 {
     Serial.begin(params::DebugParams::serial_baud_rate);
 
-    pinMode(buttonPin, INPUT);
+    pinMode(button_pin, INPUT);
     imu.init();
+    compass.init();
     gps.init();
     display.init();
 }
 
 void loop()
 {
-    // read the state of the pushbutton value:
-    buttonState = digitalRead(buttonPin);
-    // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-    if (buttonState == HIGH) 
+    const auto cur_exec_time_ms = millis();
+    if (cur_exec_time_ms - prev_exec_time_ms > 100)
     {
-        // Todo save location
-    }
+        // read the state of the pushbutton value:
+        button_state = digitalRead(button_pin);
+        // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+        if (button_state == HIGH) 
+        {
+            // Todo save location
+        }
 
-    imu.execute();
-    if (imu.checkTilt())
-    {
-        display.displayTiltOk();
+        imu.execute();
+        if (imu.checkTilt())
+        {
+            display.displayTiltOk();
+        }
+        else
+        {
+            display.displayTiltError();
+        }
+        
+        gps.execute();
+        if (gps.isLocationValid())
+        {
+            display.displayValidLocation();
+        }
+        else
+        {
+            display.displayInvalidLocation();
+        }
     }
-    else
-    {
-        display.displayTiltError();
-    }
-    
-    gps.execute();
-    if (gps.isLocationValid())
-    {
-        display.displayValidLocation();
-    }
-    else
-    {
-        display.displayInvalidLocation();
-    }
-
-    delay(100);
 }
