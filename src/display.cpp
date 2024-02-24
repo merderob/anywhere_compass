@@ -15,13 +15,17 @@
 #include "display.h"
 #include <Arduino.h>
 
-Display::Display(params::DisplayParams p):
+Display::Display(const Imu& imu, const Compass& compass, const Gps& gps, params::DisplayParams p):
     green_led_location_(p.green_led_location), 
     red_led_location_(p.red_led_location),
     green_led_tilt_(p.green_led_tilt),
-    red_led_tilt_(p.red_led_tilt)
+    red_led_tilt_(p.red_led_tilt),
+    imu_(imu),
+    compass_(compass),
+    gps_(gps)
 {
 };
+
 
 void Display::init() const
 {
@@ -29,6 +33,26 @@ void Display::init() const
     pinMode(red_led_location_, OUTPUT);
     pinMode(green_led_location_, OUTPUT);
     Serial.println("Display initialized.");
+}
+
+void Display::execute()
+{
+    if (imu_.checkTilt())
+    {
+        displayTiltOk();
+    }
+    else
+    {
+        displayTiltError();
+    }
+    if (gps_.isLocationValid())
+    {
+        displayValidLocation();
+    }
+    else
+    {
+        displayInvalidLocation();
+    }
 }
 
 void Display::displayValidLocation() const

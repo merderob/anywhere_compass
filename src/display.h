@@ -14,13 +14,16 @@
 
 #pragma once
 
-#include "params.h"
+#include "imu.h"
+#include "compass.h"
+#include "gps.h"
 
 class Display
 {
 public:
-    Display(params::DisplayParams p = {});
+    Display(const Imu& imu, const Compass& compass, const Gps& gps, params::DisplayParams p = {});
     void init() const;
+    void execute();
 
     void displayValidLocation() const;
     void displayInvalidLocation() const;
@@ -43,4 +46,11 @@ private:
     int red_led_location_ = 0;
     int green_led_tilt_ = 0;
     int red_led_tilt_ = 0;
+
+    /// @brief Reference to the IMU instace.
+    const Imu& imu_;
+    /// @brief Reference to the Compass instace.
+    const Compass& compass_;
+    /// @brief Reference to the GPS instance.
+    const Gps& gps_;
 };

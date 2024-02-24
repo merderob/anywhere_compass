@@ -16,7 +16,7 @@
 
 namespace params
 {
-    
+
 struct ImuParams
 {
     /// @brief Accelerometer sensitivity with default +/- 2g scale
@@ -31,6 +31,13 @@ struct GpsParams
     int tx_pin = 11;
     long gps_baud = 9600;
 };
+
+struct UserInputParams
+{
+     /// @brief brief The number of the pushbutton pin responsible for saving the location.
+     int button_pin_location_save = 2; 
+};
+
 
 struct DisplayParams
 {

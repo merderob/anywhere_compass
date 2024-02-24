@@ -12,16 +12,25 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
-#include "params.h"
+#include <Arduino.h>
+#include "user_input.h"
 
-class UserInput 
+UserInput::UserInput(params::UserInputParams p):
+    button_pin_location_save_(p.button_pin_location_save)
 {
-public:
-    UserInput(params::UserInputParams p ={});
-    void init();
-    void execute();
-private:
-    int button_pin_location_save_ = 0;
-    int button_state_location_ = 0;  
-};
+
+}
+
+void UserInput::init()
+{
+    pinMode(button_pin_location_save_, INPUT);
+}
+
+void UserInput::execute()
+{
+    button_state_location_ = digitalRead(button_pin_location_save_);
+    if (button_state_location_ == HIGH) 
+    {
+        // Todo save location...
+    }
+}
