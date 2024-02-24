@@ -14,9 +14,9 @@
 
 #include "compass.h"
 
-Compass::Compass()
+Compass::Compass(params::CompassParams p)
 {
-
+    sensor_.setMagneticDeclination(p.magnetic_declination_degrees, p.magnetic_declination_minutes);
 }
 
 void Compass::init()
@@ -36,7 +36,7 @@ void Compass::execute()
     case State::CALIBRATING:
         Serial.println("Calibrating sensor...");
         sensor_.calibrate();
-         Serial.println("Calibration done...");
+        Serial.println("Calibration done...");
         state_ = State::CALIBRATED;
         break;
     case State::CALIBRATED:

@@ -25,6 +25,14 @@ struct ImuParams
     float gyrocope_sensitivity  = 131.0;   
 };
 
+struct CompassParams
+{
+    /// @brief  @brief Magnetic declination (degree part) valid for Budapest.
+    int magnetic_declination_degrees = 5;
+    /// @brief  @brief Magnetic declination (minute part) valid for Budapest.
+    uint8_t magnetic_declination_minutes = 40;
+}
+
 struct GpsParams
 {
     int rx_pin = 12;

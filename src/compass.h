@@ -19,7 +19,7 @@
 
 class Compass: public SensorBase
 {
-    
+
 public:
 enum class State
 {
@@ -29,7 +29,7 @@ enum class State
     CALIBRATED
 };
 
-    Compass ();
+    Compass (params::CompassParams p = {});
     void init() override;
     void execute() override;
     void log() override;
