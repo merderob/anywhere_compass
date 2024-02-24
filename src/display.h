@@ -64,4 +64,5 @@ private:
     const Compass& compass_;
     /// @brief Reference to the GPS instance.
     const Gps& gps_;
+    
 };

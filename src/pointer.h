@@ -12,47 +12,29 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "display.h"
+#pragma once
+
+#include <FastLED.h>
+
 #include "imu.h"
 #include "compass.h"
 #include "gps.h"
-#include "pointer.h"
-#include "user_input.h"
 
-unsigned long prev_exec_time_ms = 0;
-
-Imu imu;
-
-Compass compass;
-
-Gps gps;
-
-Display display {imu, compass, gps};
-
-UserInput user_input {compass};
-
-Pointer pointer {imu, compass, gps};
-
-void setup()
+class Pointer
 {
-    Serial.begin(params::DebugParams::serial_baud_rate);
-    imu.init();
-    compass.init();
-    gps.init();
-    display.init();
-}
+public:
+    Pointer(const Imu& imu, const Compass& compass, const Gps& gps);
+    void execute();
+private:
+    CRGB::HTMLColorCode colors [5]{CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Violet, CRGB::Yellow};
+    static const int number_of_leds = 16; // TODO
+    bool enabled = false;
+    CRGB leds[number_of_leds];
 
-void loop()
-{
-    const auto cur_exec_time_ms = millis();
-    if (cur_exec_time_ms - prev_exec_time_ms > 100)
-    {
-        user_input.execute();
-        imu.execute();
-        compass.execute();
-        gps.execute();
-        display.execute();
-        pointer.execute();
-        prev_exec_time_ms = cur_exec_time_ms;
-    }
-}
+    /// @brief Reference to the IMU instace.
+    const Imu& imu_;
+    /// @brief Reference to the Compass instace.
+    const Compass& compass_;
+    /// @brief Reference to the GPS instance.
+    const Gps& gps_;
+};

@@ -12,47 +12,37 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "display.h"
-#include "imu.h"
-#include "compass.h"
-#include "gps.h"
+
 #include "pointer.h"
-#include "user_input.h"
 
-unsigned long prev_exec_time_ms = 0;
-
-Imu imu;
-
-Compass compass;
-
-Gps gps;
-
-Display display {imu, compass, gps};
-
-UserInput user_input {compass};
-
-Pointer pointer {imu, compass, gps};
-
-void setup()
+Pointer::Pointer(const Imu& imu, const Compass& compass, const Gps& gps):
+    imu_(imu),
+    compass_(compass),
+    gps_(gps)
 {
-    Serial.begin(params::DebugParams::serial_baud_rate);
-    imu.init();
-    compass.init();
-    gps.init();
-    display.init();
+    FastLED.addLeds<NEOPIXEL, 3>(leds, 16);  // GRB ordering is assumed
+    FastLED.setBrightness(50);
 }
 
-void loop()
+void Pointer::execute()
 {
-    const auto cur_exec_time_ms = millis();
-    if (cur_exec_time_ms - prev_exec_time_ms > 100)
+    if (gps_.isLocationValid() && compass_.calibrated())
     {
-        user_input.execute();
-        imu.execute();
-        compass.execute();
-        gps.execute();
-        display.execute();
-        pointer.execute();
-        prev_exec_time_ms = cur_exec_time_ms;
+        enabled = true;
+    }
+
+    const auto min = 0;
+    const auto max = 4;
+    if (enabled)
+    {
+        int randNum = rand()%(max-min + 1) + min;
+        // Turn the LED on, then pause
+        leds[4] = colors[randNum];
+        FastLED.show();
+    }
+    else
+    {
+        leds[4] = CRGB::Black;
+        FastLED.show();
     }
 }

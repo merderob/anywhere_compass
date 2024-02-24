@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace params
 {
 
@@ -31,7 +33,7 @@ struct CompassParams
     int magnetic_declination_degrees = 5;
     /// @brief  @brief Magnetic declination (minute part) valid for Budapest.
     uint8_t magnetic_declination_minutes = 40;
-}
+};
 
 struct GpsParams
 {
@@ -49,6 +51,7 @@ struct UserInputParams
 
 struct DisplayParams
 {
+    int pointer_led = 3; 
     int green_led_magnetometer = 4;
     int red_led_magnetometer = 5;
     int green_led_location = 6;
