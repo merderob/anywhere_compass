@@ -19,13 +19,27 @@
 
 class Compass: public SensorBase
 {
+    
 public:
+enum class State
+{
+    UNCALIBRATED,
+    CALIBRATION_REQUESTED,
+    CALIBRATING,
+    CALIBRATED
+};
+
     Compass ();
     void init() override;
     void execute() override;
     void log() override;
 
+    void requestCalibration();
+    bool calibrated() const;
+    State getState() const;
+
 private:
     QMC5883LCompass sensor_;
     int azimuth_deg_ = 0;
+    State state_ = State::UNCALIBRATED;
 };

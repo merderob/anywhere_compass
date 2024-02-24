@@ -20,6 +20,8 @@ Display::Display(const Imu& imu, const Compass& compass, const Gps& gps, params:
     red_led_location_(p.red_led_location),
     green_led_tilt_(p.green_led_tilt),
     red_led_tilt_(p.red_led_tilt),
+    green_led_magnetometer_(p.green_led_magnetometer),
+    red_led_magnetometer_(p.red_led_magnetometer),
     imu_(imu),
     compass_(compass),
     gps_(gps)
@@ -30,8 +32,12 @@ Display::Display(const Imu& imu, const Compass& compass, const Gps& gps, params:
 void Display::init() const
 {
     Serial.println("Initializing display");
-    pinMode(red_led_location_, OUTPUT);
     pinMode(green_led_location_, OUTPUT);
+    pinMode(red_led_location_, OUTPUT);
+    pinMode(green_led_tilt_, OUTPUT);
+    pinMode(red_led_tilt_, OUTPUT);
+    pinMode(green_led_magnetometer_, OUTPUT);
+    pinMode(red_led_magnetometer_, OUTPUT);
     Serial.println("Display initialized.");
 }
 
@@ -39,44 +45,76 @@ void Display::execute()
 {
     if (imu_.checkTilt())
     {
-        displayTiltOk();
+        tiltOk();
     }
     else
     {
-        displayTiltError();
+        tiltError();
     }
     if (gps_.isLocationValid())
     {
-        displayValidLocation();
+        validLocation();
     }
     else
     {
-        displayInvalidLocation();
+        invalidLocation();
+    }
+
+    const auto magn_state = compass_.getState();
+    switch (magn_state)
+    {
+    case Compass::State::UNCALIBRATED:
+        magnetometerNotCalibrated();
+        break;
+    case Compass::State::CALIBRATING:
+        magnetometerCalibrating();
+        break;
+    case Compass::State::CALIBRATED:
+        magnetometerCalibrated();
+        break;
     }
 }
 
-void Display::displayValidLocation() const
+void Display::validLocation() const
 {
     locationLedRedOff();
     locationLedGreenOn();
 }
 
-void Display::displayInvalidLocation() const
+void Display::invalidLocation() const
 {
     locationLedGreenOff();
     locationLedRedOn();
 }
 
-void Display::displayTiltOk() const 
+void Display::tiltOk() const 
 {
     tiltLedRedOff();
     tiltLedGreenOn();
 } 
 
-void Display::displayTiltError() const 
+void Display::tiltError() const 
 {
     tiltLedGreenOff();
     tiltLedRedOn();
+}
+
+void Display::magnetometerCalibrated() const
+{
+    magnetometerLedRedOff();
+    magnetometerLedGreenOn();
+}
+
+void Display::magnetometerCalibrating() const
+{
+    magnetometerLedRedOn();
+    magnetometerLedGreenOn();
+}
+
+void Display::magnetometerNotCalibrated() const
+{
+    magnetometerLedRedOn();
+    magnetometerLedGreenOff();
 }
 
 void Display::locationLedGreenOff() const
@@ -117,4 +155,24 @@ void Display::tiltLedRedOff() const
 void Display::tiltLedRedOn() const
 {
     digitalWrite(red_led_tilt_, HIGH);
+}
+
+void Display::magnetometerLedGreenOff() const
+{
+    digitalWrite(green_led_magnetometer_, HIGH);
+}
+
+void Display::magnetometerLedGreenOn() const
+{
+    digitalWrite(green_led_magnetometer_, LOW);
+}
+
+void Display::magnetometerLedRedOff() const
+{
+    digitalWrite(red_led_magnetometer_, HIGH);
+}
+
+void Display::magnetometerLedRedOn() const
+{
+    digitalWrite(red_led_magnetometer_, LOW);
 }

@@ -25,11 +25,15 @@ public:
     void init() const;
     void execute();
 
-    void displayValidLocation() const;
-    void displayInvalidLocation() const;
+    void validLocation() const;
+    void invalidLocation() const;
 
-    void displayTiltOk() const;
-    void displayTiltError() const;
+    void tiltOk() const;
+    void tiltError() const;
+
+    void magnetometerCalibrated() const;
+    void magnetometerCalibrating() const;
+    void magnetometerNotCalibrated() const;
 
 private:
     void locationLedGreenOff() const;
@@ -42,10 +46,17 @@ private:
     void tiltLedRedOff() const;
     void tiltLedRedOn() const;
 
+    void magnetometerLedGreenOff() const;
+    void magnetometerLedGreenOn() const;
+    void magnetometerLedRedOff() const;
+    void magnetometerLedRedOn() const;
+
     int green_led_location_ = 0;
     int red_led_location_ = 0;
     int green_led_tilt_ = 0;
     int red_led_tilt_ = 0;
+    int green_led_magnetometer_ = 0;
+    int red_led_magnetometer_ = 0;
 
     /// @brief Reference to the IMU instace.
     const Imu& imu_;

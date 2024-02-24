@@ -28,7 +28,7 @@ Gps gps;
 
 Display display {imu, compass, gps};
 
-UserInput user_input;
+UserInput user_input {compass};
 
 void setup()
 {

@@ -26,9 +26,23 @@ void Compass::init()
 
 void Compass::execute()
 {
-    // Read compass values
-    sensor_.read();
-    azimuth_deg_ = sensor_.getAzimuth();
+    switch (state_)
+    {
+    case State::UNCALIBRATED:
+        break;
+    case State::CALIBRATION_REQUESTED:
+        state_ = State::CALIBRATING;
+        break;
+    case State::CALIBRATING:
+        Serial.println("Calibrating sensor...");
+        sensor_.calibrate();
+         Serial.println("Calibration done...");
+        state_ = State::CALIBRATED;
+        break;
+    case State::CALIBRATED:
+        sensor_.read();
+        azimuth_deg_ = sensor_.getAzimuth();
+    }
 }
 
 void Compass::log()
@@ -36,4 +50,19 @@ void Compass::log()
     Serial.print("az: ");
     Serial.print(azimuth_deg_);
     Serial.println();
+}
+
+void Compass::requestCalibration()
+{
+    state_ = State::CALIBRATION_REQUESTED;
+}
+
+bool Compass::calibrated() const
+{
+    return state_ == State::CALIBRATED;
+} 
+
+Compass::State Compass::getState() const
+{
+    return state_;
 }

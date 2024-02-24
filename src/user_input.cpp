@@ -15,22 +15,31 @@
 #include <Arduino.h>
 #include "user_input.h"
 
-UserInput::UserInput(params::UserInputParams p):
-    button_pin_location_save_(p.button_pin_location_save)
+UserInput::UserInput(Compass& compass, params::UserInputParams p):
+    button_pin_calibration_(p.button_pin_calibration),
+    compass_(compass)
 {
 
 }
 
 void UserInput::init()
 {
-    pinMode(button_pin_location_save_, INPUT);
+    pinMode(button_pin_calibration_, INPUT);
 }
 
 void UserInput::execute()
 {
-    button_state_location_ = digitalRead(button_pin_location_save_);
-    if (button_state_location_ == HIGH) 
+    button_state_calibration_ = digitalRead(button_pin_calibration_);
+    if (button_state_calibration_ == HIGH) 
     {
-        // Todo save location...
+        if (!compass_.calibrated() && compass_.getState() != Compass::State::CALIBRATING)
+        {
+            Serial.println("Requesting magnetometer calibration...");
+            compass_.requestCalibration();
+        }
+        else
+        {
+            Serial.println("Magnetometer is already calibrated.");
+        }
     }
 }

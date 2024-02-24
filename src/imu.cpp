@@ -30,6 +30,7 @@ Imu::Imu(params::ImuParams p):
 
 void Imu::init()
 {
+    Serial.println("Initializing IMU");
     // join I2C bus (I2Cdev library doesn't do this automatically)
     #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
         Wire.begin();
@@ -37,15 +38,11 @@ void Imu::init()
         Fastwire::setup(400, true);
     #endif
 
-    // initialize device
-    Serial.println("Initializing I2C devices...");
     sensor_.initialize();
 
     // verify connection
-    Serial.println("Testing device connections...");
     initialized_ = sensor_.testConnection();
-    Serial.println(initialized_ ? "MPU6050 connection successful" : "MPU6050 connection failed");
-
+    Serial.println(initialized_ ? "IMU initialization successful" : "IMU initialization failed");
     sensor_.setI2CBypassEnabled(true); // set bypass mode
 }
 
@@ -73,12 +70,12 @@ void Imu::log()
         Serial.print(gy_); Serial.print("\t");
         Serial.println(gz_);
 
-        // Serial.print(ax/ACCEL_SENS); Serial.print("\t");
-        // Serial.print(ay/ACCEL_SENS); Serial.print("\t");
-        // Serial.print(az/ACCEL_SENS); Serial.print("\t");
-        // Serial.print(gx/GYRO_SENS); Serial.print("\t");
-        // Serial.print(gy/GYRO_SENS); Serial.print("\t");
-        // Serial.print(gz/GYRO_SENS); Serial.print("\t");
+        // Serial.print(ax/accelerometer_sensitivity_); Serial.print("\t");
+        // Serial.print(ay/accelerometer_sensitivity_); Serial.print("\t");
+        // Serial.print(az/accelerometer_sensitivity_); Serial.print("\t");
+        // Serial.print(gx/gyrocope_sensitivity_; Serial.print("\t");
+        // Serial.print(gy/gyrocope_sensitivity_); Serial.print("\t");
+        // Serial.print(gz/gyrocope_sensitivity_); Serial.print("\t");
     #endif
 
     #ifdef OUTPUT_BINARY_ACCELGYRO
