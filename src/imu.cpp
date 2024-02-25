@@ -54,8 +54,8 @@ void Imu::execute()
 
 bool Imu::checkTilt() const
 {
-    const auto t =  8 * sqrt(pow(ay_, 2) + pow(az_, 2)) ;
-    return abs(ax_) > t;
+    const auto t =  8 * sqrt(pow(ax_, 2) + pow(ay_, 2)) ;
+    return abs(az_) > t;
 }
 
 void Imu::log()

@@ -29,7 +29,7 @@
 // not so easy to parse, and slow(er) over UART.
 #define OUTPUT_READABLE_ACCELGYRO
 
-class Imu : public SensorBase
+class Imu: public SensorBase
 {
 public:
     Imu(params::ImuParams p = {});

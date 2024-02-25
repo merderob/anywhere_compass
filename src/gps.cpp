@@ -38,6 +38,11 @@ void Gps::execute()
     {
         sensor_.encode(serial_->read());
     }
+    if (!isLocationValid())
+    {
+        return;
+    }
+    latlon_ = {sensor_.location.lat(), sensor_.location.lng()};
 }
 
 void Gps::log()
@@ -68,30 +73,35 @@ void Gps::log()
         Serial.print(F("Invalid date"));
     }
 
-  Serial.print(F(" "));
-  if (sensor_.time.isValid())
-  {
-    if (sensor_.time.hour() < 10) Serial.print(F("0"));
-    Serial.print(sensor_.time.hour());
-    Serial.print(F(":"));
-    if (sensor_.time.minute() < 10) Serial.print(F("0"));
-    Serial.print(sensor_.time.minute());
-    Serial.print(F(":"));
-    if (sensor_.time.second() < 10) Serial.print(F("0"));
-    Serial.print(sensor_.time.second());
-    Serial.print(F("."));
-    if (sensor_.time.centisecond() < 10) Serial.print(F("0"));
-    Serial.print(sensor_.time.centisecond());
-  }
-  else
-  {
-    Serial.print(F("INVALID"));
-  }
+    Serial.print(F(" "));
+    if (sensor_.time.isValid())
+    {
+        if (sensor_.time.hour() < 10) Serial.print(F("0"));
+        Serial.print(sensor_.time.hour());
+        Serial.print(F(":"));
+        if (sensor_.time.minute() < 10) Serial.print(F("0"));
+        Serial.print(sensor_.time.minute());
+        Serial.print(F(":"));
+        if (sensor_.time.second() < 10) Serial.print(F("0"));
+        Serial.print(sensor_.time.second());
+        Serial.print(F("."));
+        if (sensor_.time.centisecond() < 10) Serial.print(F("0"));
+        Serial.print(sensor_.time.centisecond());
+    }
+    else
+    {
+        Serial.print(F("INVALID"));
+    }
 
-  Serial.println();
+    Serial.println();
 }
 
 bool Gps::isLocationValid() const
 {
     return sensor_.location.isValid();
+}
+
+Gps::LatLon Gps::getLatLon() const
+{
+    return latlon_;
 }

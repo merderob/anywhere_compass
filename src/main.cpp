@@ -12,33 +12,24 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "display.h"
-#include "imu.h"
-#include "compass.h"
-#include "gps.h"
-#include "pointer.h"
 #include "user_input.h"
+#include "sensor_handle.h"
+#include "display.h"
 
 unsigned long prev_exec_time_ms = 0;
 
-Imu imu;
+SensorHandle sensors;
 
-Compass compass;
+Display display {sensors};
 
-Gps gps;
+UserInput user_input {sensors};
 
-Display display {imu, compass, gps};
-
-UserInput user_input {compass};
-
-Pointer pointer {imu, compass, gps};
 
 void setup()
 {
     Serial.begin(params::DebugParams::serial_baud_rate);
-    imu.init();
-    compass.init();
-    gps.init();
+    user_input.init();
+    sensors.init();
     display.init();
 }
 
@@ -48,11 +39,8 @@ void loop()
     if (cur_exec_time_ms - prev_exec_time_ms > 100)
     {
         user_input.execute();
-        imu.execute();
-        compass.execute();
-        gps.execute();
+        sensors.execute();
         display.execute();
-        pointer.execute();
         prev_exec_time_ms = cur_exec_time_ms;
     }
 }

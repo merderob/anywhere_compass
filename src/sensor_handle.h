@@ -14,28 +14,22 @@
 
 #pragma once
 
-#include <FastLED.h>
+#include "imu.h"
+#include "compass.h"
 #include "gps.h"
 
-class Pointer
+class SensorHandle
 {
 public:
     void init();
     void execute();
 
-    void enable();
-    void disable();
-
-    void setLatLon(const Gps::LatLon& latlon);
-    void setAzimuth(int azimuth_deg);
-
-    void pointToNorth();
+    Imu& getImu();
+    Compass& getCompass();
+    Gps& getGps();
 
 private:
-    static const int number_of_leds = 16; // TODO
-    bool enabled_ = false;
-    CRGB leds[number_of_leds];
-    Gps::LatLon latlon_;
-    float azimuth_ = 0;
-    int active_led_ = -1;
+    Imu imu_;
+    Compass compass_;
+    Gps gps_;
 };

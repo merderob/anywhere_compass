@@ -12,30 +12,34 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#include "sensor_handle.h"
 
-#include <FastLED.h>
-#include "gps.h"
-
-class Pointer
+void SensorHandle::init()
 {
-public:
-    void init();
-    void execute();
+    imu_.init();
+    compass_.init();
+    gps_.init();
+}
 
-    void enable();
-    void disable();
 
-    void setLatLon(const Gps::LatLon& latlon);
-    void setAzimuth(int azimuth_deg);
+void SensorHandle::execute()
+{
+    imu_.execute();
+    compass_.execute();
+    gps_.execute();
+}
 
-    void pointToNorth();
+Imu& SensorHandle::getImu()
+{
+    return imu_;
+}
 
-private:
-    static const int number_of_leds = 16; // TODO
-    bool enabled_ = false;
-    CRGB leds[number_of_leds];
-    Gps::LatLon latlon_;
-    float azimuth_ = 0;
-    int active_led_ = -1;
-};
+Compass& SensorHandle::getCompass()
+{
+    return compass_;
+}
+
+Gps& SensorHandle::getGps()
+{
+    return gps_;
+}

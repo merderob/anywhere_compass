@@ -66,3 +66,8 @@ Compass::State Compass::getState() const
 {
     return state_;
 }
+
+int Compass::getAzimuith() const
+{
+    return azimuth_deg_;
+}

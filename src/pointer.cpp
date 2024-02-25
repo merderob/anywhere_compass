@@ -14,35 +14,67 @@
 
 
 #include "pointer.h"
+#include "utils.h"
 
-Pointer::Pointer(const Imu& imu, const Compass& compass, const Gps& gps):
-    imu_(imu),
-    compass_(compass),
-    gps_(gps)
+void Pointer::init()
 {
     FastLED.addLeds<NEOPIXEL, 3>(leds, 16);  // GRB ordering is assumed
     FastLED.setBrightness(50);
 }
 
+
+void Pointer::pointToNorth()
+{
+    const auto led_to_north = round(azimuth_ / M_PI * 16.0f);
+    if (led_to_north < 0 || led_to_north >= 16)
+    {
+        Serial.print("Unable to turn on led: ");
+        Serial.println(led_to_north);
+        return;
+    }
+    
+    if (active_led_ != led_to_north)
+    {
+        leds[active_led_] = CRGB::Black;
+        leds[led_to_north] = CRGB::White;
+        FastLED.show();
+        active_led_ = led_to_north;
+    }
+}
+
 void Pointer::execute()
 {
-    if (gps_.isLocationValid() && compass_.calibrated())
+    if (!enabled_)
     {
-        enabled = true;
+        return;
     }
+    pointToNorth();
+}
 
-    const auto min = 0;
-    const auto max = 4;
-    if (enabled)
-    {
-        int randNum = rand()%(max-min + 1) + min;
-        // Turn the LED on, then pause
-        leds[4] = colors[randNum];
-        FastLED.show();
+void Pointer::enable()
+{
+    enabled_ = true;
+}
+
+void Pointer::disable()
+{
+    if (enabled_)
+    {    
+        for (int i = 0; i < Pointer::number_of_leds; ++i)
+        {
+            leds[4] = CRGB::Black;
+            FastLED.show();
+        }
+        enabled_ = false;
     }
-    else
-    {
-        leds[4] = CRGB::Black;
-        FastLED.show();
-    }
+}
+
+void Pointer::setLatLon(const Gps::LatLon& latlon)
+{
+    latlon_ = latlon; 
+}
+
+void Pointer::setAzimuth(int azimuth_deg)
+{
+    azimuth_ = utils::degToRad(azimuth_deg);
 }

@@ -14,18 +14,18 @@
 
 #pragma once
 #include "params.h"
-#include "compass.h"
+#include "sensor_handle.h"
 
 class UserInput 
 {
 public:
-    UserInput(Compass& compass, params::UserInputParams p ={});
+    UserInput(SensorHandle& sensors, params::UserInputParams p ={});
     void init();
     void execute();
 private:
     int button_pin_calibration_ = 0;
     int button_state_calibration_ = 0;  
 
-    /// @brief Reference to the compass instance.
-    Compass& compass_;
+    /// @brief Reference to the sensor handler instance.
+    SensorHandle& sensors_;
 };

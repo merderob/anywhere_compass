@@ -13,29 +13,13 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
+#include <math.h>
 
-#include <FastLED.h>
-#include "gps.h"
-
-class Pointer
+namespace utils
 {
-public:
-    void init();
-    void execute();
+float degToRad(int angle_deg)
+{
+    return static_cast<float>(angle_deg) * M_PI / 180.0;
+}
 
-    void enable();
-    void disable();
-
-    void setLatLon(const Gps::LatLon& latlon);
-    void setAzimuth(int azimuth_deg);
-
-    void pointToNorth();
-
-private:
-    static const int number_of_leds = 16; // TODO
-    bool enabled_ = false;
-    CRGB leds[number_of_leds];
-    Gps::LatLon latlon_;
-    float azimuth_ = 0;
-    int active_led_ = -1;
-};
+}

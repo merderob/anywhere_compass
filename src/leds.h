@@ -14,28 +14,44 @@
 
 #pragma once
 
-#include <FastLED.h>
-#include "gps.h"
+#include "sensor_handle.h"
 
-class Pointer
+class Leds
 {
 public:
-    void init();
-    void execute();
+    Leds(const params::DisplayParams& p);
+    void init() const;
 
-    void enable();
-    void disable();
+    void validLocation() const;
+    void invalidLocation() const;
 
-    void setLatLon(const Gps::LatLon& latlon);
-    void setAzimuth(int azimuth_deg);
+    void tiltOk() const;
+    void tiltError() const;
 
-    void pointToNorth();
+    void magnetometerCalibrated() const;
+    void magnetometerCalibrating() const;
+    void magnetometerNotCalibrated() const;
 
 private:
-    static const int number_of_leds = 16; // TODO
-    bool enabled_ = false;
-    CRGB leds[number_of_leds];
-    Gps::LatLon latlon_;
-    float azimuth_ = 0;
-    int active_led_ = -1;
+    void locationLedGreenOff() const;
+    void locationLedGreenOn() const;
+    void locationLedRedOn() const;
+    void locationLedRedOff() const;
+
+    void tiltLedGreenOff() const;
+    void tiltLedGreenOn() const;
+    void tiltLedRedOff() const;
+    void tiltLedRedOn() const;
+
+    void magnetometerLedGreenOff() const;
+    void magnetometerLedGreenOn() const;
+    void magnetometerLedRedOff() const;
+    void magnetometerLedRedOn() const;
+
+    int green_led_location_ = 0;
+    int red_led_location_ = 0;
+    int green_led_tilt_ = 0;
+    int red_led_tilt_ = 0;
+    int green_led_magnetometer_ = 0;
+    int red_led_magnetometer_ = 0;
 };

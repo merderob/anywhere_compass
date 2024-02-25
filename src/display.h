@@ -14,55 +14,24 @@
 
 #pragma once
 
-#include "imu.h"
-#include "compass.h"
-#include "gps.h"
+#include "sensor_handle.h"
+#include "pointer.h"
+#include "leds.h"
 
 class Display
 {
 public:
-    Display(const Imu& imu, const Compass& compass, const Gps& gps, params::DisplayParams p = {});
-    void init() const;
+    Display(SensorHandle& sensors, params::DisplayParams p = {});
+    void init();
     void execute();
-
-    void validLocation() const;
-    void invalidLocation() const;
-
-    void tiltOk() const;
-    void tiltError() const;
-
-    void magnetometerCalibrated() const;
-    void magnetometerCalibrating() const;
-    void magnetometerNotCalibrated() const;
-
 private:
-    void locationLedGreenOff() const;
-    void locationLedGreenOn() const;
-    void locationLedRedOn() const;
-    void locationLedRedOff() const;
+    void handlePointer();
+    void handleLeds();
 
-    void tiltLedGreenOff() const;
-    void tiltLedGreenOn() const;
-    void tiltLedRedOff() const;
-    void tiltLedRedOn() const;
-
-    void magnetometerLedGreenOff() const;
-    void magnetometerLedGreenOn() const;
-    void magnetometerLedRedOff() const;
-    void magnetometerLedRedOn() const;
-
-    int green_led_location_ = 0;
-    int red_led_location_ = 0;
-    int green_led_tilt_ = 0;
-    int red_led_tilt_ = 0;
-    int green_led_magnetometer_ = 0;
-    int red_led_magnetometer_ = 0;
-
-    /// @brief Reference to the IMU instace.
-    const Imu& imu_;
-    /// @brief Reference to the Compass instace.
-    const Compass& compass_;
-    /// @brief Reference to the GPS instance.
-    const Gps& gps_;
-    
+    /// @brief Reference to sensor handle.
+    SensorHandle& sensors_;
+    /// @brief The pointer instance.
+    Pointer pointer_;
+    /// @brief The leds' instance.
+    Leds leds_;
 };

@@ -22,6 +22,14 @@ class SoftwareSerial;
 class Gps: public SensorBase
 {
 public:
+    struct LatLon 
+    {
+        LatLon():lat(0.0), lon(0.0){};
+        LatLon(double la, double lo):lat(la), lon(lo){}; 
+        double lat = 0.0;
+        double lon = 0.0;
+    };
+
     /// @brief Constructor.
     /// @param p The GPS parameters.
     Gps(params::GpsParams p = {});
@@ -31,6 +39,7 @@ public:
     void log() override;
 
     bool isLocationValid() const;
+    LatLon getLatLon() const;
 
 private:
     TinyGPSPlus sensor_;
@@ -40,4 +49,6 @@ private:
     int rx_pin_ = 0;
     int tx_pin_ = 0;
     long baud_rate_ = 9600;
+
+    LatLon latlon_;
 };

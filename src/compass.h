@@ -37,6 +37,7 @@ enum class State
     void requestCalibration();
     bool calibrated() const;
     State getState() const;
+    int getAzimuith() const;
 
 private:
     QMC5883LCompass sensor_;

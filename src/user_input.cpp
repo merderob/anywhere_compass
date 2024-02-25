@@ -15,9 +15,9 @@
 #include <Arduino.h>
 #include "user_input.h"
 
-UserInput::UserInput(Compass& compass, params::UserInputParams p):
+UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
     button_pin_calibration_(p.button_pin_calibration),
-    compass_(compass)
+    sensors_(sensors)
 {
 
 }
@@ -32,10 +32,11 @@ void UserInput::execute()
     button_state_calibration_ = digitalRead(button_pin_calibration_);
     if (button_state_calibration_ == HIGH) 
     {
-        if (!compass_.calibrated() && compass_.getState() != Compass::State::CALIBRATING)
+        auto& compass = sensors_.getCompass();
+        if (!compass.calibrated() && compass.getState() != Compass::State::CALIBRATING)
         {
             Serial.println("Requesting magnetometer calibration...");
-            compass_.requestCalibration();
+            compass.requestCalibration();
         }
         else
         {
