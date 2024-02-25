@@ -33,17 +33,22 @@ void Display::init()
 void Display::handlePointer()
 {
     const auto& imu = sensors_.getImu();
-    const auto& gps = sensors_.getGps();
     const auto& compass = sensors_.getCompass();
-
-    if (!imu.checkTilt() || !gps.isLocationValid() || !compass.calibrated())
+#ifdef BUILD_WITH_GPS
+    const auto& gps = sensors_.getGps();
+    if (!imu.checkTilt() ||  !compass.calibrated() || !gps.isLocationValid() )
+#else
+    if (!imu.checkTilt() ||  !compass.calibrated())
+#endif
     {
         pointer_.disable();
         return;
     }
 
     pointer_.enable();
+#ifdef BUILD_WITH_GPS
     pointer_.setLatLon(gps.getLatLon());
+#endif
     pointer_.setAzimuth(compass.getAzimuith());
     pointer_.execute();
 }
@@ -59,6 +64,7 @@ void Display::handleLeds()
         leds_.tiltError();
     }
 
+#ifdef BUILD_WITH_GPS
     if (sensors_.getGps().isLocationValid())
     {
         leds_.validLocation();
@@ -67,6 +73,9 @@ void Display::handleLeds()
     {
         leds_.invalidLocation();
     }
+#else
+    leds_.validLocation();
+#endif
 
     const auto magn_state = sensors_.getCompass().getState();
     switch (magn_state)

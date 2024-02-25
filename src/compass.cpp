@@ -21,7 +21,9 @@ Compass::Compass(params::CompassParams p)
 
 void Compass::init()
 {
+    Serial.println("Initializing compass");
     sensor_.init();
+    Serial.println("Initialized compass");
 }
 
 void Compass::execute()
@@ -42,6 +44,7 @@ void Compass::execute()
     case State::CALIBRATED:
         sensor_.read();
         azimuth_deg_ = sensor_.getAzimuth();
+        break;
     }
 }
 

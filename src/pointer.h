@@ -25,6 +25,7 @@ public:
 
     void enable();
     void disable();
+    void reset();
 
     void setLatLon(const Gps::LatLon& latlon);
     void setAzimuth(int azimuth_deg);

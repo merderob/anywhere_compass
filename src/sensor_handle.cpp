@@ -18,7 +18,10 @@ void SensorHandle::init()
 {
     imu_.init();
     compass_.init();
+#ifdef BUILD_WITH_GPS
     gps_.init();
+#endif
+
 }
 
 
@@ -26,7 +29,9 @@ void SensorHandle::execute()
 {
     imu_.execute();
     compass_.execute();
+#ifdef BUILD_WITH_GPS
     gps_.execute();
+#endif
 }
 
 Imu& SensorHandle::getImu()
@@ -39,7 +44,9 @@ Compass& SensorHandle::getCompass()
     return compass_;
 }
 
+#ifdef BUILD_WITH_GPS
 Gps& SensorHandle::getGps()
 {
     return gps_;
 }
+#endif

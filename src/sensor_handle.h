@@ -13,6 +13,7 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
+#define BUILD_WITH_GPS
 
 #include "imu.h"
 #include "compass.h"
@@ -26,10 +27,14 @@ public:
 
     Imu& getImu();
     Compass& getCompass();
+#ifdef BUILD_WITH_GPS
     Gps& getGps();
+#endif
 
 private:
     Imu imu_;
     Compass compass_;
+#ifdef BUILD_WITH_GPS
     Gps gps_;
+#endif
 };

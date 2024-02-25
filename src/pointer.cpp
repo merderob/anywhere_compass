@@ -20,22 +20,25 @@ void Pointer::init()
 {
     FastLED.addLeds<NEOPIXEL, 3>(leds, 16);  // GRB ordering is assumed
     FastLED.setBrightness(50);
+    reset();
 }
-
 
 void Pointer::pointToNorth()
 {
-    const auto led_to_north = round(azimuth_ / M_PI * 16.0f);
+    const auto led_to_north = round(azimuth_ / (2 *M_PI) * 16.0f);
     if (led_to_north < 0 || led_to_north >= 16)
     {
-        Serial.print("Unable to turn on led: ");
         Serial.println(led_to_north);
         return;
     }
     
     if (active_led_ != led_to_north)
     {
-        leds[active_led_] = CRGB::Black;
+        if (active_led_ != -1)
+        {
+            leds[active_led_] = CRGB::Black;
+        }
+
         leds[led_to_north] = CRGB::White;
         FastLED.show();
         active_led_ = led_to_north;
@@ -60,12 +63,18 @@ void Pointer::disable()
 {
     if (enabled_)
     {    
-        for (int i = 0; i < Pointer::number_of_leds; ++i)
-        {
-            leds[4] = CRGB::Black;
-            FastLED.show();
-        }
+        reset();
+        active_led_ = -1;
         enabled_ = false;
+    }
+}
+
+void Pointer::reset()
+{
+    for (int i = 0; i < Pointer::number_of_leds; ++i)
+    {
+        leds[i] = CRGB::Black;
+        FastLED.show();
     }
 }
 

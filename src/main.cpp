@@ -17,6 +17,7 @@
 #include "display.h"
 
 unsigned long prev_exec_time_ms = 0;
+unsigned long exec_time_ms = 100; 
 
 SensorHandle sensors;
 
@@ -36,7 +37,7 @@ void setup()
 void loop()
 {
     const auto cur_exec_time_ms = millis();
-    if (cur_exec_time_ms - prev_exec_time_ms > 100)
+    if (cur_exec_time_ms - prev_exec_time_ms > exec_time_ms)
     {
         user_input.execute();
         sensors.execute();
