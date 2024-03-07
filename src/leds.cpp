@@ -16,123 +16,74 @@
 #include <Arduino.h>
 
 Leds::Leds(const params::DisplayParams& p):
-    green_led_location_(p.green_led_location), 
-    red_led_location_(p.red_led_location),
-    green_led_tilt_(p.green_led_tilt),
-    red_led_tilt_(p.red_led_tilt),
-    green_led_magnetometer_(p.green_led_magnetometer),
-    red_led_magnetometer_(p.red_led_magnetometer)
+    led_pin_(p.led_pin),
+    number_of_leds_(p.number_of_leds_display),
+    magnetometer_led_(p.led_magnetometer),
+    location_led_(p.led_location),
+    tilt_led_(p.led_tilt),
+    reserved_led_(p.led_reserved)
+    
 {
+    leds_ = new CRGB[number_of_leds_];
 }
 
-void Leds::init() const
-{
-    pinMode(green_led_location_, OUTPUT);
-    pinMode(red_led_location_, OUTPUT);
-    pinMode(green_led_tilt_, OUTPUT);
-    pinMode(red_led_tilt_, OUTPUT);
-    pinMode(green_led_magnetometer_, OUTPUT);
-    pinMode(red_led_magnetometer_, OUTPUT);
+void Leds::init()
+{    
+    FastLED.addLeds<NEOPIXEL, 9>(leds_, number_of_leds_);  // GRB ordering is assumed, TODO
+    FastLED.setBrightness(50);
+    reset();
 }
 
-void Leds::validLocation() const
+void Leds::handleTilt(bool tilt_ok)
 {
-    locationLedRedOff();
-    locationLedGreenOn();
+    if (tilt_ok)
+    {
+        leds_[tilt_led_] = CRGB::Green;
+    }
+    else
+    {
+        leds_[tilt_led_] = CRGB::Red;
+    }
 }
 
-void Leds::invalidLocation() const
+void Leds::handleLocation(bool location_ok)
 {
-    locationLedGreenOff();
-    locationLedRedOn();
+    if (location_ok)
+    {
+        leds_[location_led_] = CRGB::Green;
+    }
+    else
+    {
+        leds_[location_led_] = CRGB::Red;
+    }
 }
 
-void Leds::tiltOk() const 
-{
-    tiltLedRedOff();
-    tiltLedGreenOn();
-} 
 
-void Leds::tiltError() const 
+void Leds::magnetometerCalibrated()
 {
-    tiltLedGreenOff();
-    tiltLedRedOn();
+    leds_[magnetometer_led_] = CRGB::Green;
 }
 
-void Leds::magnetometerCalibrated() const
+void Leds::magnetometerCalibrating()
 {
-    magnetometerLedRedOff();
-    magnetometerLedGreenOn();
+    leds_[magnetometer_led_] = CRGB::Yellow;
 }
 
-void Leds::magnetometerCalibrating() const
+void Leds::magnetometerNotCalibrated()
 {
-    magnetometerLedRedOn();
-    magnetometerLedGreenOn();
+    leds_[magnetometer_led_] = CRGB::Red;
 }
 
-void Leds::magnetometerNotCalibrated() const
+void Leds::execute()
 {
-    magnetometerLedRedOn();
-    magnetometerLedGreenOff();
+    FastLED.show();
 }
 
-void Leds::locationLedGreenOff() const
+void Leds::reset()
 {
-    digitalWrite(green_led_location_, LOW);
-}
-
-void Leds::locationLedGreenOn() const
-{
-    digitalWrite(green_led_location_, HIGH);
-}
-
-void Leds::locationLedRedOff() const
-{
-    digitalWrite(red_led_location_, LOW);
-}
-
-void Leds::locationLedRedOn() const
-{
-    digitalWrite(red_led_location_, HIGH);
-}
-
-void Leds::tiltLedGreenOff() const
-{
-    digitalWrite(green_led_tilt_, LOW);
-}
-
-void Leds::tiltLedGreenOn() const
-{
-    digitalWrite(green_led_tilt_, HIGH);
-}
-
-void Leds::tiltLedRedOff() const
-{
-    digitalWrite(red_led_tilt_, LOW);
-}
-
-void Leds::tiltLedRedOn() const
-{
-    digitalWrite(red_led_tilt_, HIGH);
-}
-
-void Leds::magnetometerLedGreenOff() const
-{
-    digitalWrite(green_led_magnetometer_, HIGH);
-}
-
-void Leds::magnetometerLedGreenOn() const
-{
-    digitalWrite(green_led_magnetometer_, LOW);
-}
-
-void Leds::magnetometerLedRedOff() const
-{
-    digitalWrite(red_led_magnetometer_, HIGH);
-}
-
-void Leds::magnetometerLedRedOn() const
-{
-    digitalWrite(red_led_magnetometer_, LOW);
+    for (int i = 0; i < number_of_leds_; ++i)
+    {
+        leds_[i] = CRGB::Black;
+    }
+    FastLED.show();
 }

@@ -19,7 +19,12 @@ namespace utils
 {
 float degToRad(int angle_deg)
 {
-    return static_cast<float>(angle_deg) * M_PI / 180.0;
+    return static_cast<float>(angle_deg) * M_PI / 180.0f;
+}
+
+float radToDeg(float angle_rad)
+{
+    return angle_rad * 180.0f / M_PI;
 }
 
 }

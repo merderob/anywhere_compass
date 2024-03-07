@@ -13,7 +13,7 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#define BUILD_WITH_GPS
+// #define BUILD_WITH_GPS
 
 #include "imu.h"
 #include "compass.h"

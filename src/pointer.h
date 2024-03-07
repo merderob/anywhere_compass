@@ -20,6 +20,7 @@
 class Pointer
 {
 public:
+    Pointer(const params::DisplayParams& p);
     void init();
     void execute();
 
@@ -33,10 +34,13 @@ public:
     void pointToNorth();
 
 private:
-    static const int number_of_leds = 16; // TODO
+    int pointer_pin_ = 8;
+    int number_of_leds_ = 16; 
+    CRGB* leds_;
+
     bool enabled_ = false;
-    CRGB leds[number_of_leds];
     Gps::LatLon latlon_;
+    /// @brief Azimuth [0; 2pi]
     float azimuth_ = 0;
     int active_led_ = -1;
 };

@@ -15,43 +15,30 @@
 #pragma once
 
 #include "sensor_handle.h"
+#include <FastLED.h>
 
 class Leds
 {
 public:
     Leds(const params::DisplayParams& p);
-    void init() const;
+    void init();
+    void execute();
+    void reset();
 
-    void validLocation() const;
-    void invalidLocation() const;
+    void handleTilt(bool tilt_ok);
+    void handleLocation(bool location_ok);
 
-    void tiltOk() const;
-    void tiltError() const;
-
-    void magnetometerCalibrated() const;
-    void magnetometerCalibrating() const;
-    void magnetometerNotCalibrated() const;
+    void magnetometerCalibrated();
+    void magnetometerCalibrating();
+    void magnetometerNotCalibrated();
 
 private:
-    void locationLedGreenOff() const;
-    void locationLedGreenOn() const;
-    void locationLedRedOn() const;
-    void locationLedRedOff() const;
+    int led_pin_ = 9;
+    int number_of_leds_ = 4;
+    CRGB* leds_;
 
-    void tiltLedGreenOff() const;
-    void tiltLedGreenOn() const;
-    void tiltLedRedOff() const;
-    void tiltLedRedOn() const;
-
-    void magnetometerLedGreenOff() const;
-    void magnetometerLedGreenOn() const;
-    void magnetometerLedRedOff() const;
-    void magnetometerLedRedOn() const;
-
-    int green_led_location_ = 0;
-    int red_led_location_ = 0;
-    int green_led_tilt_ = 0;
-    int red_led_tilt_ = 0;
-    int green_led_magnetometer_ = 0;
-    int red_led_magnetometer_ = 0;
+    int magnetometer_led_ = 0;
+    int location_led_ = 0;
+    int tilt_led_ = 0;
+    int reserved_led_ = 0;
 };

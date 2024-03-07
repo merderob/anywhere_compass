@@ -16,17 +16,23 @@
 #include "pointer.h"
 #include "utils.h"
 
+Pointer::Pointer(const params::DisplayParams& p):
+    number_of_leds_(p.number_of_leds_pointer)
+{
+    leds_ = new CRGB[number_of_leds_];
+}
+
 void Pointer::init()
 {
-    FastLED.addLeds<NEOPIXEL, 3>(leds, 16);  // GRB ordering is assumed
+    FastLED.addLeds<NEOPIXEL, 8>(leds_, number_of_leds_);  // GRB ordering is assumed
     FastLED.setBrightness(50);
     reset();
 }
 
 void Pointer::pointToNorth()
 {
-    const auto led_to_north = round(azimuth_ / (2 *M_PI) * 16.0f);
-    if (led_to_north < 0 || led_to_north >= 16)
+    const auto led_to_north = 15 - round(azimuth_ / (2 *M_PI) * 16.0f);
+    if (led_to_north < 0 || led_to_north >= number_of_leds_)
     {
         Serial.println(led_to_north);
         return;
@@ -36,10 +42,10 @@ void Pointer::pointToNorth()
     {
         if (active_led_ != -1)
         {
-            leds[active_led_] = CRGB::Black;
+            leds_[active_led_] = CRGB::Black;
         }
 
-        leds[led_to_north] = CRGB::White;
+        leds_[led_to_north] = CRGB::White;
         FastLED.show();
         active_led_ = led_to_north;
     }
@@ -71,9 +77,9 @@ void Pointer::disable()
 
 void Pointer::reset()
 {
-    for (int i = 0; i < Pointer::number_of_leds; ++i)
+    for (int i = 0; i < number_of_leds_; ++i)
     {
-        leds[i] = CRGB::Black;
+        leds_[i] = CRGB::Black;
         FastLED.show();
     }
 }
@@ -85,5 +91,5 @@ void Pointer::setLatLon(const Gps::LatLon& latlon)
 
 void Pointer::setAzimuth(int azimuth_deg)
 {
-    azimuth_ = utils::degToRad(azimuth_deg);
+    azimuth_ = utils::degToRad(azimuth_deg) + M_PI;
 }

@@ -17,6 +17,7 @@
 
 Display::Display(SensorHandle& sensors, params::DisplayParams p):
     sensors_(sensors),
+    pointer_(p),
     leds_(p)
 {
 }
@@ -55,26 +56,12 @@ void Display::handlePointer()
 
 void Display::handleLeds()
 {
-    if (sensors_.getImu().checkTilt())
-    {
-        leds_.tiltOk();
-    }
-    else
-    {
-        leds_.tiltError();
-    }
+    leds_.handleTilt(sensors_.getImu().checkTilt());
 
 #ifdef BUILD_WITH_GPS
-    if (sensors_.getGps().isLocationValid())
-    {
-        leds_.validLocation();
-    }
-    else
-    {
-        leds_.invalidLocation();
-    }
+    leds_.handleLocation(sensors_.getGps().isLocationValid());
 #else
-    leds_.validLocation();
+     leds_.handleLocation(true);
 #endif
 
     const auto magn_state = sensors_.getCompass().getState();
@@ -93,6 +80,7 @@ void Display::handleLeds()
         leds_.magnetometerCalibrated();
         break;
     }
+    leds_.execute();
 }
 
 void Display::execute()

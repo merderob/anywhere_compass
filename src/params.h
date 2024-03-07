@@ -45,19 +45,23 @@ struct GpsParams
 struct UserInputParams
 {
      /// @brief brief The number of the pushbutton pin responsible for calibrating the magnetometer.
-     int button_pin_calibration = 2; 
+     int button_pin_calibration = 10; 
 };
 
 
 struct DisplayParams
 {
-    int pointer_led = 3; 
-    int green_led_magnetometer = 4;
-    int red_led_magnetometer = 5;
-    int green_led_location = 6;
-    int red_led_location = 7;
-    int green_led_tilt = 8;
-    int red_led_tilt = 9;
+    // Pointer-related parameters
+    int pointer_led = 8; 
+    int number_of_leds_pointer = 16;
+
+    // Leds-related parameters
+    int led_pin = 9;
+    int number_of_leds_display = 4;
+    int led_magnetometer = 0;
+    int led_location = 1;
+    int led_tilt = 2;
+    int led_reserved = 3;
 };
 
 struct DebugParams 
