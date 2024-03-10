@@ -59,9 +59,12 @@ void Display::handleLeds()
     leds_.handleTilt(sensors_.getImu().checkTilt());
 
 #ifdef BUILD_WITH_GPS
-    leds_.handleLocation(sensors_.getGps().isLocationValid());
+    const auto& gps = sensors_.getGps();
+    leds_.handleLocation(gps.isLocationValid());
+    leds_.handleTargetLocation(gps.hasTargetLocation());
 #else
-     leds_.handleLocation(true);
+    leds_.handleLocation(true);
+    leds_.handleTargetLocation(true);
 #endif
 
     const auto magn_state = sensors_.getCompass().getState();

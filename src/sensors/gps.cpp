@@ -40,16 +40,17 @@ void Gps::execute()
     {
         sensor_.encode(serial_->read());
     }
-    if (!isLocationValid())
+
+    if (!sensor_.location.isValid())
     {
         return;
     }
+
     latlon_ = {sensor_.location.lat(), sensor_.location.lng()};
 }
 
 void Gps::log()
 {
-    //Serial.print(F("Location: ")); 
     if (sensor_.location.isValid())
     {
         Serial.print(sensor_.location.lat(), 6);
@@ -100,10 +101,30 @@ void Gps::log()
 
 bool Gps::isLocationValid() const
 {
-    return sensor_.location.isValid();
+    return latlon_.valid;
 }
 
 LatLon Gps::getLatLon() const
 {
     return latlon_;
+}
+
+bool Gps::hasTargetLocation() const
+{
+    return target_latlon_.valid;
+}
+
+void Gps::saveTargetLocation()
+{
+    target_latlon_ = latlon_;
+}
+
+void Gps::setTargetLocation(LatLon latlon)
+{
+    target_latlon_ = latlon;
+}
+
+LatLon Gps::getTargetLocation() const
+{
+    return target_latlon_;
 }

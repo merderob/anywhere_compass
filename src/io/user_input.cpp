@@ -17,6 +17,7 @@
 
 UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
     button_pin_calibration_(p.button_pin_calibration),
+    button_pin_location_save_(p.button_pin_location_save),
     sensors_(sensors)
 {
 
@@ -25,22 +26,96 @@ UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
 void UserInput::init()
 {
     pinMode(button_pin_calibration_, INPUT);
+    pinMode(button_pin_location_save_, INPUT);
 }
 
 void UserInput::execute()
 {
-    button_state_calibration_ = digitalRead(button_pin_calibration_);
-    if (button_state_calibration_ == HIGH) 
+    const auto now = millis();
+    handleCalibrationButton(now);
+#ifdef BUILD_WITH_GPS
+    handleLocationSaveButton(now);
+#endif
+}
+
+void UserInput::handleCalibrationButton(long now_ms)
+{
+    const auto calibration_button_state = readButton(button_pin_calibration_);
+    if (calibration_button_state == HIGH) 
     {
-        auto& compass = sensors_.getCompass();
-        if (!compass.calibrated() && compass.getState() != Compass::State::CALIBRATING)
+        if (prev_button_state_calibration_ == LOW)
         {
+            // button was just pressed
+            calibration_button_pressed_at_ms_ = now_ms;
+        }
+
+        if (!calibration_button_needs_release_&&
+            now_ms - calibration_button_pressed_at_ms_ > button_wait_time_ms_)
+        {
+            auto& compass = sensors_.getCompass();
             Serial.println("Requesting magnetometer calibration...");
             compass.requestCalibration();
-        }
-        else
-        {
-            Serial.println("Magnetometer is already calibrated.");
+            calibration_button_needs_release_ = true;
         }
     }
+    else
+    {
+        if (prev_button_state_calibration_ == HIGH)
+        {
+            // button was just released
+            calibration_button_needs_release_ = false;
+        }
+    }
+    prev_button_state_calibration_ = calibration_button_state;
+}
+
+#ifdef BUILD_WITH_GPS
+void UserInput::handleLocationSaveButton(long now_ms)
+{
+    auto& gps = sensors_.getGps();
+    if (!gps.isLocationValid())
+    {
+        Serial.println("Gps location is not valid - cannot save it.");
+        return;
+    }
+
+    const auto location_save_button_state = readButton(button_pin_location_save_);
+    if (location_save_button_state == HIGH) 
+    {
+        if (prev_button_state_location_save_ == LOW)
+        {
+            // button was just pressed
+            save_location_button_pressed_at_ms_ = now_ms;
+        }
+
+        if (!save_location_button_needs_release_ && 
+            now_ms - save_location_button_pressed_at_ms_ > button_wait_time_ms_)
+        {
+            Serial.println("Saving GPS location as target.");
+            gps.saveTargetLocation();
+            sensors_.savePersistentLocation();
+            save_location_button_needs_release_ = true;
+        }
+    }
+    else
+    {
+        if (prev_button_state_location_save_ == HIGH)
+        {
+            // button was just released
+            save_location_button_needs_release_ = false;
+        }
+    }
+    prev_button_state_location_save_ = location_save_button_state;
+}
+#endif
+
+bool UserInput::isPressed(int button_pin) const
+{
+    const auto button_state =  readButton(button_pin);
+    return button_state == HIGH;
+}
+
+int UserInput::readButton(int button_pin) const
+{
+    return digitalRead(button_pin);
 }

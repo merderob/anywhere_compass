@@ -12,14 +12,17 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "io/user_input.h"
-#include "io/display.h"
-#include "sensors/sensor_handle.h"
+#include <io/user_input.h>
+#include <io/display.h>
+#include <sensors/sensor_handle.h>
+#include <persistent_storage/persistent_storage.h>
 
 unsigned long prev_exec_time_ms = 0;
 unsigned long exec_time_ms = 100; 
 
-SensorHandle sensors;
+PersistentStorage persistent_storage;
+
+SensorHandle sensors {persistent_storage};
 
 Display display {sensors};
 

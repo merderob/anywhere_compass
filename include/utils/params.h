@@ -46,6 +46,9 @@ struct UserInputParams
 {
      /// @brief brief The number of the pushbutton pin responsible for calibrating the magnetometer.
      int button_pin_calibration = 10; 
+     
+     /// @brief brief The number of the pushbutton pin responsible for saving a target location.
+     int button_pin_location_save = 7; 
 };
 
 
@@ -61,7 +64,7 @@ struct DisplayParams
     int led_magnetometer = 0;
     int led_location = 1;
     int led_tilt = 2;
-    int led_reserved = 3;
+    int target_location_set = 3;
 };
 
 struct DebugParams 

@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "utils/params.h"
-#include "sensors/sensor_handle.h"
+#include <utils/params.h>
+#include <sensors/sensor_handle.h>
 
 class UserInput 
 {
@@ -25,8 +25,24 @@ public:
     void execute();
 private:
     int button_pin_calibration_ = 0;
-    int button_state_calibration_ = 0;  
+    int prev_button_state_calibration_ = 0;  
+    long calibration_button_pressed_at_ms_ = 0;
+    bool calibration_button_needs_release_ = false;
+
+    int button_pin_location_save_ = 0;
+    int prev_button_state_location_save_ = 0;
+    long save_location_button_pressed_at_ms_ = 0;
+    bool save_location_button_needs_release_ = false;
+
+    const long button_wait_time_ms_ = 3000; // 3s
 
     /// @brief Reference to the sensor handler instance.
     SensorHandle& sensors_;
+
+    void handleCalibrationButton(long execution_time_ms);
+#ifdef BUILD_WITH_GPS
+    void handleLocationSaveButton(long execution_time_ms);
+#endif
+    bool isPressed(int button_pin) const;
+    int readButton(int button_pin) const;
 };

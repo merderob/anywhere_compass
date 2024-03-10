@@ -21,7 +21,7 @@ Leds::Leds(const params::DisplayParams& p):
     magnetometer_led_(p.led_magnetometer),
     location_led_(p.led_location),
     tilt_led_(p.led_tilt),
-    reserved_led_(p.led_reserved)
+    target_location_set_led_(p.target_location_set)
     
 {
     leds_ = new CRGB[number_of_leds_];
@@ -72,6 +72,18 @@ void Leds::magnetometerCalibrating()
 void Leds::magnetometerNotCalibrated()
 {
     leds_[magnetometer_led_] = CRGB::Red;
+}
+
+void Leds::handleTargetLocation(bool target_location_set)
+{
+    if (target_location_set)
+    {
+        leds_[target_location_set_led_] = CRGB::Green;
+    }
+    else
+    {
+        leds_[target_location_set_led_] = CRGB::Red;
+    }
 }
 
 void Leds::execute()

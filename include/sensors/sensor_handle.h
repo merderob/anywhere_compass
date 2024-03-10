@@ -17,14 +17,25 @@
 
 #include "imu.h"
 #include "compass.h"
-#include "sensors/gps.h"
+#ifdef BUILD_WITH_GPS
+#include "gps.h"
+#endif
+#include <persistent_storage/persistent_storage.h>
 
 class SensorHandle
 {
 public:
+    /// @brief Constructor.
+    /// @param persistent_storage Reference to the persistent storage. 
+    SensorHandle(const PersistentStorage& persistent_storage);
+
     void init();
     void execute();
 
+    void savePersistentCalibration();
+#ifdef BUILD_WITH_GPS
+    void savePersistentLocation() const;
+#endif
     Imu& getImu();
     Compass& getCompass();
 #ifdef BUILD_WITH_GPS
@@ -37,4 +48,5 @@ private:
 #ifdef BUILD_WITH_GPS
     Gps gps_;
 #endif
+    const PersistentStorage& persistent_storage_;
 };

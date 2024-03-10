@@ -12,42 +12,44 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#include "Arduino.h"
+#include <persistent_storage/persistent_storage.h>
+#include <EEPROM.h>
 
-#include "sensor_base.h"
-#include <utils/types.h>
-#include <QMC5883LCompass.h>
-
-class Compass: public SensorBase
+bool PersistentStorage::hasTargetPosition() const
 {
+    const auto start = EEPROM.read(address_latlon_);
+    return start != invalid_start_byte_;
+}
 
-public:
-enum class State
+gps::LatLon PersistentStorage::getTargetPosition() const
 {
-    UNCALIBRATED,
-    CALIBRATION_REQUESTED,
-    CALIBRATING,
-    CALIBRATED
-};
+    gps::LatLon ret;
+    EEPROM.get(address_latlon_, ret);
+    return ret;
+}
 
-    Compass (params::CompassParams p = {});
-    void init() override;
-    void execute() override;
-    void log() override;
+void PersistentStorage::saveTargetPosition(const gps::LatLon& lat_lon) const
+{
+    Serial.println("Saving location persistently");
+    EEPROM.put(address_latlon_, lat_lon);
+}
 
-    void requestCalibration();
-    bool calibrated() const;
-    void setCalibration(const compass::Calibration& calibration);
-    compass::Calibration getCalibration();
+bool PersistentStorage::hastMagneticCalibration() const
+{
+    const auto start = EEPROM.read(address_magnetic_cali_);
+    return start != invalid_start_byte_;
+}
 
-    State getState() const;
-    int getAzimuith() const;
+compass::Calibration PersistentStorage::getMagneticCalibration() const
+{
+    compass::Calibration ret;
+    EEPROM.get(address_magnetic_cali_, ret);
+    return ret;
+}
 
-    bool canSaveCalibration() const;
-
-private:
-    QMC5883LCompass sensor_;
-    int azimuth_deg_ = 0;
-    State state_ = State::UNCALIBRATED;
-    bool can_save_calibration_ = false;
-};
+void PersistentStorage::saveMagneticCalibration(const compass::Calibration& calibration) const
+{
+    Serial.println("Saving magnetic calibration persistently");
+    EEPROM.put(address_magnetic_cali_, calibration);
+}

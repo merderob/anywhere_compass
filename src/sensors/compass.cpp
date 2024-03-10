@@ -14,6 +14,8 @@
 
 #include "sensors/compass.h"
 
+using namespace compass;
+
 Compass::Compass(params::CompassParams p)
 {
     sensor_.setMagneticDeclination(p.magnetic_declination_degrees, p.magnetic_declination_minutes);
@@ -28,6 +30,7 @@ void Compass::init()
 
 void Compass::execute()
 {
+    const auto prev_state = state_;
     switch (state_)
     {
     case State::UNCALIBRATED:
@@ -36,9 +39,11 @@ void Compass::execute()
         state_ = State::CALIBRATING;
         break;
     case State::CALIBRATING:
-        Serial.println("Calibrating sensor...");
+        Serial.println("Clearing compass calibration.");
+        sensor_.clearCalibration();
+        Serial.println("Calibrating compass...");
         sensor_.calibrate();
-        Serial.println("Calibration done...");
+        Serial.println("Calibration done.");
         state_ = State::CALIBRATED;
         break;
     case State::CALIBRATED:
@@ -46,6 +51,7 @@ void Compass::execute()
         azimuth_deg_ = sensor_.getAzimuth();
         break;
     }
+    can_save_calibration_ = (prev_state == State::CALIBRATING) && (state_ == State::CALIBRATED);
 }
 
 void Compass::log()
@@ -63,7 +69,26 @@ void Compass::requestCalibration()
 bool Compass::calibrated() const
 {
     return state_ == State::CALIBRATED;
-} 
+}
+
+void Compass::setCalibration(const compass::Calibration& calibration)
+{
+    sensor_.setCalibrationOffsets(calibration.x_offset, calibration.y_offset, calibration.z_offset);
+    sensor_.setCalibrationScales(calibration.x_scale, calibration.y_scale, calibration.z_scale);
+    state_ = State::CALIBRATED;
+}
+
+Calibration Compass::getCalibration()
+{
+    return {
+        sensor_.getCalibrationOffset(0),
+        sensor_.getCalibrationOffset(1),
+        sensor_.getCalibrationOffset(2),
+        sensor_.getCalibrationScale(0),
+        sensor_.getCalibrationScale(1),
+        sensor_.getCalibrationScale(2)
+    };
+}
 
 Compass::State Compass::getState() const
 {
@@ -73,4 +98,9 @@ Compass::State Compass::getState() const
 int Compass::getAzimuith() const
 {
     return azimuth_deg_;
+}
+
+bool Compass::canSaveCalibration() const
+{
+    return can_save_calibration_;
 }

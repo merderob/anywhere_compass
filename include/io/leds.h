@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "sensors/sensor_handle.h"
 #include <FastLED.h>
+#include <sensors/sensor_handle.h>
 
 class Leds
 {
@@ -26,11 +26,14 @@ public:
     void reset();
 
     void handleTilt(bool tilt_ok);
+
     void handleLocation(bool location_ok);
 
     void magnetometerCalibrated();
     void magnetometerCalibrating();
     void magnetometerNotCalibrated();
+
+    void handleTargetLocation(bool target_location_set);
 
 private:
     int led_pin_ = 9;
@@ -40,5 +43,5 @@ private:
     int magnetometer_led_ = 0;
     int location_led_ = 0;
     int tilt_led_ = 0;
-    int reserved_led_ = 0;
+    int target_location_set_led_ = 0;
 };

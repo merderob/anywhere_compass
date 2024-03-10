@@ -14,8 +14,8 @@
 
 #pragma once
 
+#include "sensor_base.h"
 #include <TinyGPSPlus.h>
-#include <sensors/sensor_base.h>
 #include <utils/types.h>
 
 class SoftwareSerial;
@@ -34,6 +34,11 @@ public:
     bool isLocationValid() const;
     gps::LatLon getLatLon() const;
 
+    bool hasTargetLocation() const;
+    void saveTargetLocation();
+    void setTargetLocation(gps::LatLon latlon);
+    gps::LatLon getTargetLocation() const;
+
 private:
     TinyGPSPlus sensor_;
     // The serial connection to the GPS device
@@ -44,4 +49,5 @@ private:
     long baud_rate_ = 9600;
 
     gps::LatLon latlon_;
+    gps::LatLon target_latlon_;
 };
