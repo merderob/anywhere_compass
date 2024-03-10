@@ -14,33 +14,40 @@
 
 #pragma once
 
-#include <FastLED.h>
-#include "gps.h"
+#include "I2Cdev.h"
+#include "MPU6050.h"
+#include "sensors/sensor_base.h"
 
-class Pointer
+// uncomment "OUTPUT_BINARY_ACCELGYRO" to send all 6 axes of data as 16-bit
+// binary, one right after the other. This is very fast (as fast as possible
+// without compression or data loss), and easy to parse, but impossible to read
+// for a human.
+//#define OUTPUT_BINARY_ACCELGYRO
+
+// uncomment "OUTPUT_READABLE_ACCELGYRO" if you want to see a tab-separated
+// list of the accel X/Y/Z and then gyro X/Y/Z values in decimal. Easy to read,
+// not so easy to parse, and slow(er) over UART.
+#define OUTPUT_READABLE_ACCELGYRO
+
+class Imu: public SensorBase
 {
 public:
-    Pointer(const params::DisplayParams& p);
-    void init();
-    void execute();
+    Imu(params::ImuParams p = {});
+    void init() override;
+    void execute() override;
+    void log() override;
 
-    void enable();
-    void disable();
-    void reset();
-
-    void setLatLon(const Gps::LatLon& latlon);
-    void setAzimuth(int azimuth_deg);
-
-    void pointToNorth();
+    bool checkTilt() const;
 
 private:
-    int pointer_pin_ = 8;
-    int number_of_leds_ = 16; 
-    CRGB* leds_;
+    MPU6050 sensor_;
+    int16_t ax_;
+    int16_t ay_;
+    int16_t az_;
+    int16_t gx_; 
+    int16_t gy_;
+    int16_t gz_;
 
-    bool enabled_ = false;
-    Gps::LatLon latlon_;
-    /// @brief Azimuth [0; 2pi]
-    float azimuth_ = 0;
-    int active_led_ = -1;
+    float accelerometer_sensitivity_ = 0.0f;
+    float gyrocope_sensitivity_ = 0.0;
 };

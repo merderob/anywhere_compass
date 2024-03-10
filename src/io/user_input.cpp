@@ -12,35 +12,35 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#include <Arduino.h>
+#include "io/user_input.h"
 
-#include <QMC5883LCompass.h>
-#include "sensor_base.h"
-
-class Compass: public SensorBase
+UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
+    button_pin_calibration_(p.button_pin_calibration),
+    sensors_(sensors)
 {
 
-public:
-enum class State
+}
+
+void UserInput::init()
 {
-    UNCALIBRATED,
-    CALIBRATION_REQUESTED,
-    CALIBRATING,
-    CALIBRATED
-};
+    pinMode(button_pin_calibration_, INPUT);
+}
 
-    Compass (params::CompassParams p = {});
-    void init() override;
-    void execute() override;
-    void log() override;
-
-    void requestCalibration();
-    bool calibrated() const;
-    State getState() const;
-    int getAzimuith() const;
-
-private:
-    QMC5883LCompass sensor_;
-    int azimuth_deg_ = 0;
-    State state_ = State::UNCALIBRATED;
-};
+void UserInput::execute()
+{
+    button_state_calibration_ = digitalRead(button_pin_calibration_);
+    if (button_state_calibration_ == HIGH) 
+    {
+        auto& compass = sensors_.getCompass();
+        if (!compass.calibrated() && compass.getState() != Compass::State::CALIBRATING)
+        {
+            Serial.println("Requesting magnetometer calibration...");
+            compass.requestCalibration();
+        }
+        else
+        {
+            Serial.println("Magnetometer is already calibrated.");
+        }
+    }
+}

@@ -13,8 +13,8 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include "pointer.h"
-#include "utils.h"
+#include "io/pointer.h"
+#include "utils/utils.h"
 
 Pointer::Pointer(const params::DisplayParams& p):
     number_of_leds_(p.number_of_leds_pointer)

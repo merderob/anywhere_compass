@@ -14,31 +14,24 @@
 
 #pragma once
 
-#include "sensor_handle.h"
-#include <FastLED.h>
+#include "sensors/sensor_handle.h"
+#include "pointer.h"
+#include "leds.h"
 
-class Leds
+class Display
 {
 public:
-    Leds(const params::DisplayParams& p);
+    Display(SensorHandle& sensors, params::DisplayParams p = {});
     void init();
     void execute();
-    void reset();
-
-    void handleTilt(bool tilt_ok);
-    void handleLocation(bool location_ok);
-
-    void magnetometerCalibrated();
-    void magnetometerCalibrating();
-    void magnetometerNotCalibrated();
-
 private:
-    int led_pin_ = 9;
-    int number_of_leds_ = 4;
-    CRGB* leds_;
+    void handlePointer();
+    void handleLeds();
 
-    int magnetometer_led_ = 0;
-    int location_led_ = 0;
-    int tilt_led_ = 0;
-    int reserved_led_ = 0;
+    /// @brief Reference to sensor handle.
+    SensorHandle& sensors_;
+    /// @brief The pointer instance.
+    Pointer pointer_;
+    /// @brief The leds' instance.
+    Leds leds_;
 };

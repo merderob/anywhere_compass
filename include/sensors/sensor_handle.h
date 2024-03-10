@@ -17,7 +17,7 @@
 
 #include "imu.h"
 #include "compass.h"
-#include "gps.h"
+#include "sensors/gps.h"
 
 class SensorHandle
 {

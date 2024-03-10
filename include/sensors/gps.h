@@ -14,40 +14,41 @@
 
 #pragma once
 
-#include "sensor_base.h"
-#include "I2Cdev.h"
-#include "MPU6050.h"
+#include <TinyGPSPlus.h>
+#include "sensors/sensor_base.h"
 
-// uncomment "OUTPUT_BINARY_ACCELGYRO" to send all 6 axes of data as 16-bit
-// binary, one right after the other. This is very fast (as fast as possible
-// without compression or data loss), and easy to parse, but impossible to read
-// for a human.
-//#define OUTPUT_BINARY_ACCELGYRO
+class SoftwareSerial;
 
-// uncomment "OUTPUT_READABLE_ACCELGYRO" if you want to see a tab-separated
-// list of the accel X/Y/Z and then gyro X/Y/Z values in decimal. Easy to read,
-// not so easy to parse, and slow(er) over UART.
-#define OUTPUT_READABLE_ACCELGYRO
-
-class Imu: public SensorBase
+class Gps: public SensorBase
 {
 public:
-    Imu(params::ImuParams p = {});
+    struct LatLon 
+    {
+        LatLon():lat(0.0), lon(0.0){};
+        LatLon(double la, double lo):lat(la), lon(lo){}; 
+        double lat = 0.0;
+        double lon = 0.0;
+    };
+
+    /// @brief Constructor.
+    /// @param p The GPS parameters.
+    Gps(params::GpsParams p = {});
+
     void init() override;
     void execute() override;
     void log() override;
 
-    bool checkTilt() const;
+    bool isLocationValid() const;
+    LatLon getLatLon() const;
 
 private:
-    MPU6050 sensor_;
-    int16_t ax_;
-    int16_t ay_;
-    int16_t az_;
-    int16_t gx_; 
-    int16_t gy_;
-    int16_t gz_;
+    TinyGPSPlus sensor_;
+    // The serial connection to the GPS device
+    SoftwareSerial* serial_ = nullptr;
 
-    float accelerometer_sensitivity_ = 0.0f;
-    float gyrocope_sensitivity_ = 0.0;
+    int rx_pin_ = 0;
+    int tx_pin_ = 0;
+    long baud_rate_ = 9600;
+
+    LatLon latlon_;
 };

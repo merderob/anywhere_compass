@@ -12,35 +12,33 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include <Arduino.h>
-#include "user_input.h"
+#pragma once
 
-UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
-    button_pin_calibration_(p.button_pin_calibration),
-    sensors_(sensors)
+#include "sensors/sensor_handle.h"
+#include <FastLED.h>
+
+class Leds
 {
+public:
+    Leds(const params::DisplayParams& p);
+    void init();
+    void execute();
+    void reset();
 
-}
+    void handleTilt(bool tilt_ok);
+    void handleLocation(bool location_ok);
 
-void UserInput::init()
-{
-    pinMode(button_pin_calibration_, INPUT);
-}
+    void magnetometerCalibrated();
+    void magnetometerCalibrating();
+    void magnetometerNotCalibrated();
 
-void UserInput::execute()
-{
-    button_state_calibration_ = digitalRead(button_pin_calibration_);
-    if (button_state_calibration_ == HIGH) 
-    {
-        auto& compass = sensors_.getCompass();
-        if (!compass.calibrated() && compass.getState() != Compass::State::CALIBRATING)
-        {
-            Serial.println("Requesting magnetometer calibration...");
-            compass.requestCalibration();
-        }
-        else
-        {
-            Serial.println("Magnetometer is already calibrated.");
-        }
-    }
-}
+private:
+    int led_pin_ = 9;
+    int number_of_leds_ = 4;
+    CRGB* leds_;
+
+    int magnetometer_led_ = 0;
+    int location_led_ = 0;
+    int tilt_led_ = 0;
+    int reserved_led_ = 0;
+};

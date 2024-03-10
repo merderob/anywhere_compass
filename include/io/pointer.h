@@ -14,24 +14,33 @@
 
 #pragma once
 
-#include "sensor_handle.h"
-#include "pointer.h"
-#include "leds.h"
+#include <FastLED.h>
+#include "sensors/gps.h"
 
-class Display
+class Pointer
 {
 public:
-    Display(SensorHandle& sensors, params::DisplayParams p = {});
+    Pointer(const params::DisplayParams& p);
     void init();
     void execute();
-private:
-    void handlePointer();
-    void handleLeds();
 
-    /// @brief Reference to sensor handle.
-    SensorHandle& sensors_;
-    /// @brief The pointer instance.
-    Pointer pointer_;
-    /// @brief The leds' instance.
-    Leds leds_;
+    void enable();
+    void disable();
+    void reset();
+
+    void setLatLon(const Gps::LatLon& latlon);
+    void setAzimuth(int azimuth_deg);
+
+    void pointToNorth();
+
+private:
+    int pointer_pin_ = 8;
+    int number_of_leds_ = 16; 
+    CRGB* leds_;
+
+    bool enabled_ = false;
+    Gps::LatLon latlon_;
+    /// @brief Azimuth [0; 2pi]
+    float azimuth_ = 0;
+    int active_led_ = -1;
 };

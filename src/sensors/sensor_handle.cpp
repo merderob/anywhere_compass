@@ -12,9 +12,41 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "sensor_base.h"
+#include "sensors/sensor_handle.h"
 
-bool SensorBase::ready() const 
+void SensorHandle::init()
 {
-    return initialized_;
+    imu_.init();
+    compass_.init();
+#ifdef BUILD_WITH_GPS
+    gps_.init();
+#endif
+
 }
+
+
+void SensorHandle::execute()
+{
+    imu_.execute();
+    compass_.execute();
+#ifdef BUILD_WITH_GPS
+    gps_.execute();
+#endif
+}
+
+Imu& SensorHandle::getImu()
+{
+    return imu_;
+}
+
+Compass& SensorHandle::getCompass()
+{
+    return compass_;
+}
+
+#ifdef BUILD_WITH_GPS
+Gps& SensorHandle::getGps()
+{
+    return gps_;
+}
+#endif

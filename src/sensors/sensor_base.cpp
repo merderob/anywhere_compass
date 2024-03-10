@@ -12,43 +12,9 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#include "sensors/sensor_base.h"
 
-#include <TinyGPSPlus.h>
-#include "sensor_base.h"
-
-class SoftwareSerial;
-
-class Gps: public SensorBase
+bool SensorBase::ready() const 
 {
-public:
-    struct LatLon 
-    {
-        LatLon():lat(0.0), lon(0.0){};
-        LatLon(double la, double lo):lat(la), lon(lo){}; 
-        double lat = 0.0;
-        double lon = 0.0;
-    };
-
-    /// @brief Constructor.
-    /// @param p The GPS parameters.
-    Gps(params::GpsParams p = {});
-
-    void init() override;
-    void execute() override;
-    void log() override;
-
-    bool isLocationValid() const;
-    LatLon getLatLon() const;
-
-private:
-    TinyGPSPlus sensor_;
-    // The serial connection to the GPS device
-    SoftwareSerial* serial_ = nullptr;
-
-    int rx_pin_ = 0;
-    int tx_pin_ = 0;
-    long baud_rate_ = 9600;
-
-    LatLon latlon_;
-};
+    return initialized_;
+}

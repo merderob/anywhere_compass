@@ -12,41 +12,35 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "sensor_handle.h"
+#pragma once
 
-void SensorHandle::init()
+#include <QMC5883LCompass.h>
+#include "sensors/sensor_base.h"
+
+class Compass: public SensorBase
 {
-    imu_.init();
-    compass_.init();
-#ifdef BUILD_WITH_GPS
-    gps_.init();
-#endif
 
-}
-
-
-void SensorHandle::execute()
+public:
+enum class State
 {
-    imu_.execute();
-    compass_.execute();
-#ifdef BUILD_WITH_GPS
-    gps_.execute();
-#endif
-}
+    UNCALIBRATED,
+    CALIBRATION_REQUESTED,
+    CALIBRATING,
+    CALIBRATED
+};
 
-Imu& SensorHandle::getImu()
-{
-    return imu_;
-}
+    Compass (params::CompassParams p = {});
+    void init() override;
+    void execute() override;
+    void log() override;
 
-Compass& SensorHandle::getCompass()
-{
-    return compass_;
-}
+    void requestCalibration();
+    bool calibrated() const;
+    State getState() const;
+    int getAzimuith() const;
 
-#ifdef BUILD_WITH_GPS
-Gps& SensorHandle::getGps()
-{
-    return gps_;
-}
-#endif
+private:
+    QMC5883LCompass sensor_;
+    int azimuth_deg_ = 0;
+    State state_ = State::UNCALIBRATED;
+};

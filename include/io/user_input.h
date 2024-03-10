@@ -14,21 +14,19 @@
 
 #pragma once
 
-#include "params.h"
+#include "utils/params.h"
+#include "sensors/sensor_handle.h"
 
-class SensorBase
+class UserInput 
 {
 public:
-    /// @brief Initializes the sensor.
-    virtual void init() = 0;
-    /// @brief Executes the sensor update step.
-    virtual void execute() = 0;
-    /// @brief Logs the internal states.
-    virtual void log() = 0;
-    /// @brief Returns if the sensor is ready to use.
-    /// @return True, if the sensor is ready. 
-    virtual bool ready() const;
-protected:
-    /// @brief Stores if the sensor is initialized.
-    bool initialized_ = false;
+    UserInput(SensorHandle& sensors, params::UserInputParams p ={});
+    void init();
+    void execute();
+private:
+    int button_pin_calibration_ = 0;
+    int button_state_calibration_ = 0;  
+
+    /// @brief Reference to the sensor handler instance.
+    SensorHandle& sensors_;
 };
