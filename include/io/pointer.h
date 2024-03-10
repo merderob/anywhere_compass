@@ -15,7 +15,8 @@
 #pragma once
 
 #include <FastLED.h>
-#include "sensors/gps.h"
+#include <sensors/gps.h>
+#include <utils/types.h>
 
 class Pointer
 {
@@ -28,7 +29,7 @@ public:
     void disable();
     void reset();
 
-    void setLatLon(const Gps::LatLon& latlon);
+    void setLatLon(const gps::LatLon& latlon);
     void setAzimuth(int azimuth_deg);
 
     void pointToNorth();
@@ -39,7 +40,7 @@ private:
     CRGB* leds_;
 
     bool enabled_ = false;
-    Gps::LatLon latlon_;
+    gps::LatLon latlon_;
     /// @brief Azimuth [0; 2pi]
     float azimuth_ = 0;
     int active_led_ = -1;

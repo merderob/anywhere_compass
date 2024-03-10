@@ -84,7 +84,7 @@ void Pointer::reset()
     }
 }
 
-void Pointer::setLatLon(const Gps::LatLon& latlon)
+void Pointer::setLatLon(const gps::LatLon& latlon)
 {
     latlon_ = latlon; 
 }

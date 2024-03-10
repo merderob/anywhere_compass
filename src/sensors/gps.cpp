@@ -12,9 +12,11 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "sensors/gps.h"
+#include <sensors/gps.h>
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+
+using namespace gps;
 
 Gps::Gps (params::GpsParams p):
     rx_pin_(p.rx_pin),
@@ -101,7 +103,7 @@ bool Gps::isLocationValid() const
     return sensor_.location.isValid();
 }
 
-Gps::LatLon Gps::getLatLon() const
+LatLon Gps::getLatLon() const
 {
     return latlon_;
 }
