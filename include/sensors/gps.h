@@ -32,7 +32,7 @@ public:
     void log() override;
 
     bool isLocationValid() const;
-    gps::LatLon getLatLon() const;
+    gps::LatLon getLocation() const;
 
     bool hasTargetLocation() const;
     void saveTargetLocation();

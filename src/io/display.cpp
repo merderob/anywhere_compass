@@ -48,7 +48,8 @@ void Display::handlePointer()
 
     pointer_.enable();
 #ifdef BUILD_WITH_GPS
-    pointer_.setLatLon(gps.getLatLon());
+    pointer_.setLatLon(gps.getLocation());
+    pointer_.setTargetLatlon(gps.getTargetLocation());
 #endif
     pointer_.setAzimuth(compass.getAzimuith());
     pointer_.setHeading(compass.getHeading());

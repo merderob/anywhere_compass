@@ -68,7 +68,20 @@ int Pointer::ledToNorth()
 
 int Pointer::ledToLocation()
 {
-    // TODO...
+    if (!target_latlon_.valid || !latlon_.valid)
+    {
+        active_color_ = CRGB::Red;
+        return 0;
+    }
+
+    const auto f1 = latlon_.lat;
+    const auto l1 = latlon_.lon;
+    const auto f2 = target_latlon_.lat;
+    const auto l2 = target_latlon_.lon;
+    const auto y = sin(l2-l1) * cos(f2);
+    const auto x = cos(f1 )* sin(f2) - sin(f1)* cos(f2)* cos(l2-l1);
+    const auto th = atan2(y, x);
+    Serial.print("theta: "); Serial.println(th);
     return 1;
 }
 
@@ -110,9 +123,14 @@ void Pointer::setHeading(const compass::Heading heading)
     heading_ = heading;
 }
 
-void Pointer::setLatLon(const gps::LatLon& latlon)
+void Pointer::setLocation(const gps::LatLon& latlon)
 {
     latlon_ = latlon; 
+}
+
+void Pointer::setTargetLocation(const gps::LatLon& target_latlon)
+{
+    target_latlon_ = target_latlon; 
 }
 
 void Pointer::setAzimuth(int azimuth_deg)

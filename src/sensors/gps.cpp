@@ -104,7 +104,7 @@ bool Gps::isLocationValid() const
     return latlon_.valid;
 }
 
-LatLon Gps::getLatLon() const
+LatLon Gps::getLocation() const
 {
     return latlon_;
 }

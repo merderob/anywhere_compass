@@ -30,7 +30,8 @@ public:
     void reset();
 
     void setHeading(compass::Heading heading);
-    void setLatLon(const gps::LatLon& latlon);
+    void setLocation(const gps::LatLon& latlon);
+    void setTargetLocation(const gps::LatLon& target_latlon);
     void setAzimuth(int azimuth_deg);
 
     void point();
@@ -44,6 +45,7 @@ private:
 
     bool enabled_ = false;
     gps::LatLon latlon_;
+    gps::LatLon target_latlon_;
     /// @brief Azimuth [0; 2pi]
     float azimuth_ = 0;
     int active_led_ = -1;
