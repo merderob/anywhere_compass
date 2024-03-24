@@ -19,6 +19,7 @@ UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
     button_calibration_(p.button_analog_pin, p.button_value_calibration, p.button_read_threshold),
     button_location_save_(p.button_analog_pin, p.button_value_location_save, p.button_read_threshold),
     button_heading_change_(p.button_analog_pin, p.button_value_heading_change, p.button_read_threshold),
+    button_wait_time_ms_(p.button_wait_time_ms),
     sensors_(sensors)
 {
 
@@ -31,11 +32,11 @@ void UserInput::init()
 void UserInput::execute()
 {
     const auto now = millis();
-    readButtons();
     handleCalibrationButton(now);
 #ifdef BUILD_WITH_GPS
     handleLocationSaveButton(now);
 #endif
+    handleHeadingChangeButton(now);
 }
 
 void UserInput::handleCalibrationButton(long now_ms)
@@ -106,7 +107,32 @@ void UserInput::handleLocationSaveButton(long now_ms)
 }
 #endif
 
-void UserInput::readButtons()
+void UserInput::handleHeadingChangeButton(long now_ms)
 {
     button_heading_change_.read();
+    if (button_heading_change_.isPressed()) 
+    {
+        if (!button_heading_change_.wasPressed())
+        {
+            // button was just pressed
+            heading_change_button_pressed_at_ms_ = now_ms;
+        }
+
+        if (!heading_change_button_needs_release_&&
+            now_ms - heading_change_button_pressed_at_ms_ > button_wait_time_ms_)
+        {
+            Serial.println("Changing heading...");
+            auto& compass = sensors_.getCompass();
+            compass.changeHeading();
+            heading_change_button_needs_release_ = true;
+        }
+    }
+    else
+    {
+        if (button_heading_change_.wasPressed())
+        {
+            // button was just released
+            heading_change_button_needs_release_ = false;
+        }
+    }
 }

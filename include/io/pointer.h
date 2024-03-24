@@ -29,10 +29,13 @@ public:
     void disable();
     void reset();
 
+    void setHeading(compass::Heading heading);
     void setLatLon(const gps::LatLon& latlon);
     void setAzimuth(int azimuth_deg);
 
-    void pointToNorth();
+    void point();
+    int ledToNorth();
+    int ledToLocation();
 
 private:
     int pointer_pin_ = 8;
@@ -44,4 +47,6 @@ private:
     /// @brief Azimuth [0; 2pi]
     float azimuth_ = 0;
     int active_led_ = -1;
+    compass::Heading heading_ = compass::Heading::NORTH;
+    CRGB::HTMLColorCode active_color_ = CRGB::Teal;
 };

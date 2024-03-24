@@ -35,8 +35,11 @@ private:
 
     long save_location_button_pressed_at_ms_ = 0;
     bool save_location_button_needs_release_ = false;
+    
+    long heading_change_button_pressed_at_ms_ = 0;
+    bool heading_change_button_needs_release_ = false;
 
-    const long button_wait_time_ms_ = 3000; // 3s
+    const long button_wait_time_ms_ = 0;
 
     /// @brief Reference to the sensor handler instance.
     SensorHandle& sensors_;
@@ -45,5 +48,5 @@ private:
 #ifdef BUILD_WITH_GPS
     void handleLocationSaveButton(long execution_time_ms);
 #endif
-    void readButtons();
+    void handleHeadingChangeButton(long execution_time_ms);
 };

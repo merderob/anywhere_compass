@@ -29,26 +29,47 @@ void Pointer::init()
     reset();
 }
 
-void Pointer::pointToNorth()
+void Pointer::point()
 {
-    const auto led_to_north = 15 - round(azimuth_ / (2 *M_PI) * 16.0f);
-    if (led_to_north < 0 || led_to_north >= number_of_leds_)
+    int led_to_show = -1;
+    if (heading_ == compass::Heading::NORTH)
     {
-        Serial.println(led_to_north);
+        active_color_ = CRGB::Teal;
+        led_to_show = ledToNorth();
+    }
+    else
+    {
+        active_color_ = CRGB::LightPink;
+        led_to_show = ledToLocation();
+    }
+
+    if (led_to_show < 0 || led_to_show >= number_of_leds_)
+    {
         return;
     }
     
-    if (active_led_ != led_to_north)
+    if (active_led_ != led_to_show)
     {
         if (active_led_ != -1)
         {
             leds_[active_led_] = CRGB::Black;
         }
 
-        leds_[led_to_north] = CRGB::White;
+        leds_[led_to_show] = active_color_;
         FastLED.show();
-        active_led_ = led_to_north;
+        active_led_ = led_to_show;
     }
+}
+
+int Pointer::ledToNorth()
+{
+    return 15 - round(azimuth_ / (2 *M_PI) * 16.0f);
+}
+
+int Pointer::ledToLocation()
+{
+    // TODO...
+    return 1;
 }
 
 void Pointer::execute()
@@ -57,7 +78,7 @@ void Pointer::execute()
     {
         return;
     }
-    pointToNorth();
+    point();
 }
 
 void Pointer::enable()
@@ -82,6 +103,11 @@ void Pointer::reset()
         leds_[i] = CRGB::Black;
         FastLED.show();
     }
+}
+
+void Pointer::setHeading(const compass::Heading heading)
+{
+    heading_ = heading;
 }
 
 void Pointer::setLatLon(const gps::LatLon& latlon)

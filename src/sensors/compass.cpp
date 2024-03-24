@@ -104,3 +104,20 @@ bool Compass::canSaveCalibration() const
 {
     return can_save_calibration_;
 }
+
+void Compass::changeHeading() 
+{
+    if (heading_ == Heading::NORTH)
+    {
+        heading_ = Heading::LOCATION;
+    }
+    else
+    {
+        heading_ = Heading::NORTH;
+    }
+}
+
+Heading Compass::getHeading() const
+{
+    return heading_;
+}

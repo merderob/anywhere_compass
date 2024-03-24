@@ -24,9 +24,9 @@ PersistentStorage persistent_storage;
 
 SensorHandle sensors {persistent_storage};
 
-Display display {sensors};
-
 UserInput user_input {sensors};
+
+Display display {sensors};
 
 
 void setup()

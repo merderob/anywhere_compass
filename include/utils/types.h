@@ -41,4 +41,10 @@ namespace compass
         float y_scale = 1.0f;
         float z_scale = 1.0f;
     };   
+
+    enum class Heading
+    {
+        NORTH,
+        LOCATION
+    };
 }

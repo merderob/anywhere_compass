@@ -46,14 +46,16 @@ struct UserInputParams
 {   
     /// @brief The pin for the analog button inputs.
     int button_analog_pin = 54;
-     /// @brief brief The nominal value of the analog input for the "calibration" button.
-     int button_value_calibration = 928; 
-     /// @brief brief The nominal value of the analog input for the "location save" button.
-     int button_value_location_save = 1002; 
-     /// @brief brief The nominal value of the analog input for the "heading change" button.
-     int button_value_heading_change = 1012;
-     /// @brief The threshold in which the analog values are accepted.
-     int button_read_threshold = 5;
+    /// @brief brief The nominal value of the analog input for the "calibration" button.
+    int button_value_calibration = 928; 
+    /// @brief brief The nominal value of the analog input for the "location save" button.
+    int button_value_location_save = 1002; 
+    /// @brief brief The nominal value of the analog input for the "heading change" button.
+    int button_value_heading_change = 1012;
+    /// @brief The threshold in which the analog values are accepted.
+    int button_read_threshold = 5;
+    /// @brief The time required for a button push to be accepted.
+    long button_wait_time_ms = 2000; // 2s
 };
 
 

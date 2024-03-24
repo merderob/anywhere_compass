@@ -22,13 +22,13 @@ class Compass: public SensorBase
 {
 
 public:
-enum class State
-{
-    UNCALIBRATED,
-    CALIBRATION_REQUESTED,
-    CALIBRATING,
-    CALIBRATED
-};
+    enum class State
+    {
+        UNCALIBRATED,
+        CALIBRATION_REQUESTED,
+        CALIBRATING,
+        CALIBRATED
+    };
 
     Compass (params::CompassParams p = {});
     void init() override;
@@ -44,10 +44,13 @@ enum class State
     int getAzimuith() const;
 
     bool canSaveCalibration() const;
+    void changeHeading();
+    compass::Heading getHeading() const;
 
 private:
     QMC5883LCompass sensor_;
     int azimuth_deg_ = 0;
     State state_ = State::UNCALIBRATED;
     bool can_save_calibration_ = false;
+    compass::Heading heading_ = compass::Heading::NORTH;
 };
