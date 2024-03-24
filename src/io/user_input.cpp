@@ -16,8 +16,9 @@
 #include "io/user_input.h"
 
 UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
-    button_pin_calibration_(p.button_pin_calibration),
-    button_pin_location_save_(p.button_pin_location_save),
+    button_calibration_(p.button_analog_pin, p.button_value_calibration, p.button_read_threshold),
+    button_location_save_(p.button_analog_pin, p.button_value_location_save, p.button_read_threshold),
+    button_heading_change_(p.button_analog_pin, p.button_value_heading_change, p.button_read_threshold),
     sensors_(sensors)
 {
 
@@ -25,13 +26,12 @@ UserInput::UserInput(SensorHandle& sensors, params::UserInputParams p):
 
 void UserInput::init()
 {
-    pinMode(button_pin_calibration_, INPUT);
-    pinMode(button_pin_location_save_, INPUT);
 }
 
 void UserInput::execute()
 {
     const auto now = millis();
+    readButtons();
     handleCalibrationButton(now);
 #ifdef BUILD_WITH_GPS
     handleLocationSaveButton(now);
@@ -40,10 +40,10 @@ void UserInput::execute()
 
 void UserInput::handleCalibrationButton(long now_ms)
 {
-    const auto calibration_button_state = readButton(button_pin_calibration_);
-    if (calibration_button_state == HIGH) 
+    button_calibration_.read();
+    if (button_calibration_.isPressed()) 
     {
-        if (prev_button_state_calibration_ == LOW)
+        if (!button_calibration_.wasPressed())
         {
             // button was just pressed
             calibration_button_pressed_at_ms_ = now_ms;
@@ -60,29 +60,27 @@ void UserInput::handleCalibrationButton(long now_ms)
     }
     else
     {
-        if (prev_button_state_calibration_ == HIGH)
+        if (button_calibration_.wasPressed())
         {
             // button was just released
             calibration_button_needs_release_ = false;
         }
     }
-    prev_button_state_calibration_ = calibration_button_state;
 }
 
 #ifdef BUILD_WITH_GPS
 void UserInput::handleLocationSaveButton(long now_ms)
 {
+    button_location_save_.read();
     auto& gps = sensors_.getGps();
     if (!gps.isLocationValid())
     {
-        Serial.println("Gps location is not valid - cannot save it.");
         return;
     }
 
-    const auto location_save_button_state = readButton(button_pin_location_save_);
-    if (location_save_button_state == HIGH) 
+    if (button_location_save_.isPressed()) 
     {
-        if (prev_button_state_location_save_ == LOW)
+        if (!button_location_save_.wasPressed())
         {
             // button was just pressed
             save_location_button_pressed_at_ms_ = now_ms;
@@ -99,23 +97,16 @@ void UserInput::handleLocationSaveButton(long now_ms)
     }
     else
     {
-        if (prev_button_state_location_save_ == HIGH)
+        if (button_location_save_.wasPressed())
         {
             // button was just released
             save_location_button_needs_release_ = false;
         }
     }
-    prev_button_state_location_save_ = location_save_button_state;
 }
 #endif
 
-bool UserInput::isPressed(int button_pin) const
+void UserInput::readButtons()
 {
-    const auto button_state =  readButton(button_pin);
-    return button_state == HIGH;
-}
-
-int UserInput::readButton(int button_pin) const
-{
-    return digitalRead(button_pin);
+    button_heading_change_.read();
 }

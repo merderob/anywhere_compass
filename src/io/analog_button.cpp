@@ -12,38 +12,28 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#include "io/analog_button.h"
+#include <Arduino.h>
 
-#include "analog_button.h"
-#include <utils/params.h>
-#include <sensors/sensor_handle.h>
-
-class UserInput 
+AnalogButton::AnalogButton(int pin, int nominal_value, int threshold):
+    pin_(pin), nominal_value_(nominal_value), threshold_(threshold)
 {
-public:
-    UserInput(SensorHandle& sensors, params::UserInputParams p ={});
-    void init();
-    void execute();
-private:
+    pinMode(pin_, INPUT);
+}
 
-    AnalogButton button_calibration_;
-    AnalogButton button_location_save_;
-    AnalogButton button_heading_change_;
+void AnalogButton::read()
+{
+    was_pressed_ = is_pressed_;
+    const auto button_value = analogRead(pin_);
+    is_pressed_ = ((nominal_value_ - threshold_) < button_value) && (button_value < (nominal_value_ + threshold_));
+}
 
-    long calibration_button_pressed_at_ms_ = 0;
-    bool calibration_button_needs_release_ = false;
+bool AnalogButton::isPressed() const
+{
+    return is_pressed_;
+}
 
-    long save_location_button_pressed_at_ms_ = 0;
-    bool save_location_button_needs_release_ = false;
-
-    const long button_wait_time_ms_ = 3000; // 3s
-
-    /// @brief Reference to the sensor handler instance.
-    SensorHandle& sensors_;
-
-    void handleCalibrationButton(long execution_time_ms);
-#ifdef BUILD_WITH_GPS
-    void handleLocationSaveButton(long execution_time_ms);
-#endif
-    void readButtons();
-};
+bool AnalogButton::wasPressed() const
+{
+    return was_pressed_;
+}

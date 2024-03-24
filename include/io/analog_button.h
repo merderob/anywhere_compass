@@ -14,36 +14,29 @@
 
 #pragma once
 
-#include "analog_button.h"
-#include <utils/params.h>
-#include <sensors/sensor_handle.h>
-
-class UserInput 
+/// @brief Class representing a button input with analog value.
+class AnalogButton
 {
 public:
-    UserInput(SensorHandle& sensors, params::UserInputParams p ={});
-    void init();
-    void execute();
+    /// @brief Constructor.
+    AnalogButton(int pin, int nominal_value, int threshold);
+    /// @brief Reads the analog value of the input pin.
+    void read();
+    /// @brief Returns true if the button is pressed (the value is in the threshold).
+    /// @return True, if the button is pressed.
+    bool isPressed() const;
+    /// @brief Returns true if the button was pressed  in the previous cycle (the value was in the threshold).
+    /// @return True, if the button was pressed.
+    bool wasPressed() const;
 private:
-
-    AnalogButton button_calibration_;
-    AnalogButton button_location_save_;
-    AnalogButton button_heading_change_;
-
-    long calibration_button_pressed_at_ms_ = 0;
-    bool calibration_button_needs_release_ = false;
-
-    long save_location_button_pressed_at_ms_ = 0;
-    bool save_location_button_needs_release_ = false;
-
-    const long button_wait_time_ms_ = 3000; // 3s
-
-    /// @brief Reference to the sensor handler instance.
-    SensorHandle& sensors_;
-
-    void handleCalibrationButton(long execution_time_ms);
-#ifdef BUILD_WITH_GPS
-    void handleLocationSaveButton(long execution_time_ms);
-#endif
-    void readButtons();
+    /// @brief The input analog pin.
+    int pin_ = 0;
+    /// @brief The nominal value of the analog input.
+    int nominal_value_ = 0;
+    /// @brief The threshold in which the input value is accepted.
+    int threshold_ = 0;
+    /// @brief Stores if the input is valid.
+    bool is_pressed_ = false;
+    /// @brief Stores if the input in the previous execution was valid.
+    bool was_pressed_ = false;
 };
